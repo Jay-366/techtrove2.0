@@ -73,6 +73,27 @@ export default function Navbar() {
               </AnimatedNavLink>
             );
           })}
+          
+          {/* Subscribe Button */}
+          <Link 
+            href="/subscribe"
+            className="px-4 py-1.5 rounded-full transition-all duration-300 text-sm font-medium"
+            style={{
+              background: 'linear-gradient(45deg, oklch(97.1% 0.014 343.198), oklch(98.4% 0.019 200.873))',
+              color: '#000000',
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.3)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.2)";
+            }}
+          >
+            Subscribe
+          </Link>
         </nav>
       </div>
     </header>
