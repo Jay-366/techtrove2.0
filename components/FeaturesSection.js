@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import Link from 'next/link';
+import CardFlip from './kokonutui/card-flip';
 
 // SVG Icon Components
 const ZapIcon = ({ className, style }) => (
@@ -67,65 +68,45 @@ const WalletIcon = ({ className, style }) => (
 export default function FeaturesSection() {
   const ref = useRef(null);
 
-  // Quick Access Cards
-  const quickAccessCards = [
-    {
-      href: '#products',
-      icon: ShoppingCartIcon,
-      title: 'Browse Products',
-      description: 'Explore our tech marketplace',
-    },
-    {
-      href: '#support',
-      icon: MessageSquareIcon,
-      title: 'Get Support',
-      description: 'Chat with our experts',
-    },
-    {
-      href: '#ai-tools',
-      icon: BotIcon,
-      title: 'AI Tools',
-      description: 'Smart product recommendations',
-    },
-    {
-      href: '#account',
-      icon: WalletIcon,
-      title: 'My Account',
-      description: 'Manage your purchases',
-    },
-  ];
 
-  // Feature highlights
+
+  // Feature highlights for CardFlip
   const features = [
     {
-      icon: ZapIcon,
-      title: "Lightning Fast Delivery",
-      description: "Get your tech products delivered within 24-48 hours with our express shipping service.",
+      title: "AI Orchestration",
+      subtitle: "Multi-agent coordination",
+      description: "Coordinate multiple AI agents seamlessly to accomplish complex tasks with intelligent workflow management.",
+      features: ["Smart Routing", "Agent Coordination", "Workflow Management", "Task Distribution"]
     },
     {
-      icon: ShieldIcon,
-      title: "Quality Guaranteed",
-      description: "All products come with manufacturer warranty and our 30-day satisfaction guarantee.",
+      title: "Custom Agents",
+      subtitle: "Build your own AI",
+      description: "Create and deploy custom AI agents tailored to your specific needs and business requirements.",
+      features: ["Custom Training", "Easy Deployment", "API Integration", "Performance Monitoring"]
     },
     {
-      icon: UsersIcon,
-      title: "24/7 Expert Support",
-      description: "Our tech experts are available round the clock to help you with any questions or issues.",
+      title: "Real-time Chat",
+      subtitle: "Instant AI responses",
+      description: "Engage with AI agents through real-time conversations with lightning-fast response times.",
+      features: ["Instant Messaging", "Context Awareness", "Multi-language", "Voice Support"]
     },
     {
-      icon: DollarSignIcon,
-      title: "Best Prices",
-      description: "Competitive pricing with regular discounts and special offers for our valued customers.",
+      title: "Advanced Analytics",
+      subtitle: "Intelligent insights",
+      description: "Get deep insights into your AI interactions with comprehensive analytics and performance metrics.",
+      features: ["Usage Analytics", "Performance Metrics", "Cost Tracking", "Optimization Tips"]
     },
     {
-      icon: CpuIcon,
-      title: "Latest Technology",
-      description: "Stay ahead with the newest tech releases and innovative products from top brands.",
+      title: "Enterprise Security",
+      subtitle: "Bank-level protection",
+      description: "Enterprise-grade security with end-to-end encryption and compliance with industry standards.",
+      features: ["End-to-End Encryption", "SOC2 Compliance", "Data Privacy", "Audit Logs"]
     },
     {
-      icon: LockIcon,
-      title: "Secure Shopping",
-      description: "Shop with confidence using our encrypted checkout and secure payment processing.",
+      title: "API Integration",
+      subtitle: "Seamless connectivity",
+      description: "Integrate IntelliBox into your existing systems with our comprehensive API and SDKs.",
+      features: ["REST API", "GraphQL", "Webhooks", "SDKs Available"]
     }
   ];
 
@@ -144,111 +125,7 @@ export default function FeaturesSection() {
       />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Quick Access Section */}
-        <div className="mb-20">
-          {/* Curved Text Effect */}
-          <div className="text-center mb-12">
-            <h2 
-              className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4"
-              style={{ 
-                background: 'linear-gradient(45deg, oklch(97.1% 0.014 343.198), oklch(98.4% 0.019 200.873))',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                letterSpacing: '0.05em',
-                textShadow: '0 0 30px oklch(97.1% 0.014 343.198 / 0.5)'
-              }}
-            >
-              QUICK ACCESS
-            </h2>
-            <p 
-              className="text-xl max-w-3xl mx-auto"
-              style={{ color: 'rgba(255, 255, 255, 0.8)' }}
-            >
-              Start your tech shopping journey with our streamlined access points
-            </p>
-          </div>
 
-          {/* Quick Access Cards Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center">
-            {quickAccessCards.map((card, index) => {
-              const Icon = card.icon;
-              return (
-                <div
-                  key={card.href}
-                  className="perspective-[1000px]"
-                >
-                  <Link href={card.href} className="block">
-                    <div className="group h-[300px] w-[260px]">
-                      <div className="relative h-full rounded-[30px] shadow-2xl transition-all duration-500 ease-in-out transform-3d group-hover:transform-[rotate3d(1,1,0,12deg)] group-hover:scale-105">
-                        {/* Main Card */}
-                        <div 
-                          className="absolute inset-0 rounded-[30px] border"
-                          style={{ 
-                            backgroundColor: 'rgba(93, 96, 108, 0.1)',
-                            borderColor: 'rgba(251, 237, 224, 0.2)',
-                            backdropFilter: 'blur(10px)'
-                          }}
-                        />
-                        
-                        {/* Glass layer */}
-                        <div 
-                          className="absolute inset-2 rounded-[25px] border"
-                          style={{
-                            borderColor: 'rgba(251, 237, 224, 0.1)',
-                            background: 'linear-gradient(135deg, rgba(251, 237, 224, 0.1) 0%, rgba(93, 96, 108, 0.05) 100%)',
-                            backdropFilter: 'blur(5px)'
-                          }}
-                        />
-                        
-                        {/* Content */}
-                        <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
-                          {/* Icon */}
-                          <div className="mb-6 transition-transform duration-300 group-hover:scale-110">
-                            <div className="relative">
-                              <Icon 
-                                className="h-16 w-16 relative z-10" 
-                                style={{ 
-                                  color: '#ffffff',
-                                  filter: 'drop-shadow(0 0 15px oklch(97.1% 0.014 343.198 / 0.6))',
-                                }}
-                              />
-                            </div>
-                          </div>
-                          
-                          {/* Title */}
-                          <h3 
-                            className="text-xl font-bold text-center mb-3" 
-                            style={{ color: '#ffffff' }}
-                          >
-                            {card.title}
-                          </h3>
-                          
-                          {/* Description */}
-                          <p 
-                            className="text-sm text-center leading-relaxed" 
-                            style={{ color: 'rgba(255, 255, 255, 0.7)' }}
-                          >
-                            {card.description}
-                          </p>
-                        </div>
-
-                        {/* Bottom accent */}
-                        <div 
-                          className="absolute bottom-4 left-1/2 -translate-x-1/2 w-12 h-1 rounded-full transition-all duration-500"
-                          style={{ 
-                            background: 'linear-gradient(45deg, oklch(97.1% 0.014 343.198), oklch(98.4% 0.019 200.873))',
-                            boxShadow: '0 0 20px oklch(97.1% 0.014 343.198 / 0.8)',
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
-        </div>
 
         {/* Features Section */}
         <div className="text-center mb-16">
@@ -261,50 +138,26 @@ export default function FeaturesSection() {
               backgroundClip: 'text'
             }}
           >
-            Why Choose TechTrove?
+            Why Choose IntelliBox?
           </h2>
           <p 
             className="text-xl max-w-3xl mx-auto"
             style={{ color: 'rgba(255, 255, 255, 0.8)' }}
           >
-            We provide the best technology shopping experience with unmatched quality and service
+            Experience the future of AI with our comprehensive multi-agent orchestration platform
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => {
-            const Icon = feature.icon;
-            return (
-              <div 
-                key={index} 
-                className="group p-6 rounded-2xl transition-all duration-300 hover:scale-105 border"
-                style={{ 
-                  backgroundColor: 'rgba(93, 96, 108, 0.1)',
-                  borderColor: 'rgba(251, 237, 224, 0.1)',
-                  backdropFilter: 'blur(10px)'
-                }}
-              >
-                <div className="mb-4">
-                  <Icon 
-                    className="h-12 w-12 group-hover:scale-110 transition-transform duration-300" 
-                    style={{ 
-                      color: '#ffffff',
-                      filter: 'drop-shadow(0 0 10px oklch(97.1% 0.014 343.198 / 0.5))'
-                    }}
-                  />
-                </div>
-                <h3 
-                  className="text-xl font-semibold mb-2" 
-                  style={{ color: '#ffffff' }}
-                >
-                  {feature.title}
-                </h3>
-                <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                  {feature.description}
-                </p>
-              </div>
-            );
-          })}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+          {features.map((feature, index) => (
+            <CardFlip
+              key={index}
+              title={feature.title}
+              subtitle={feature.subtitle}
+              description={feature.description}
+              features={feature.features}
+            />
+          ))}
         </div>
       </div>
     </section>
