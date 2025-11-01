@@ -6,20 +6,36 @@ import Navigation from '@/components/Navigation';
 
 export default function PaymentSuccess() {
   const router = useRouter();
-  const { session_id } = router.query;
+  const { session_id, transactionId } = router.query;
   const [sessionData, setSessionData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (session_id) {
+    // Check for either session_id (from Stripe) or transactionId (from other sources)
+    const paymentId = session_id || transactionId;
+    
+    if (paymentId || router.isReady) {
       // You can fetch session details here if needed
       setSessionData({
-        id: session_id,
+        id: paymentId || 'completed',
         status: 'complete'
       });
       setLoading(false);
     }
-  }, [session_id]);
+
+    // Fallback: if no parameters and router is ready, show success anyway after 2 seconds
+    const timeout = setTimeout(() => {
+      if (router.isReady && !paymentId) {
+        setSessionData({
+          id: 'completed',
+          status: 'complete'
+        });
+        setLoading(false);
+      }
+    }, 2000);
+
+    return () => clearTimeout(timeout);
+  }, [session_id, transactionId, router.isReady]);
 
   if (loading) {
     return (
