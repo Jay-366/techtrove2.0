@@ -28,10 +28,15 @@ app.get('/health', (req, res) => {
 
 app.post('/chatRequest', async (req, res) => {
   try {
-    const { message, email } = req.body;
-    const result = await handleUserRequest(message, email);
+    const { message, email, confirmExecute } = req.body;
+    if (!message) {
+      return res.status(400).json({ error: 'Message is required' });
+    }
+    
+    const result = await handleUserRequest(message, email, confirmExecute === true);
     res.json(result);
   } catch (error) {
+    console.error('Error in /chatRequest:', error);
     res.status(500).json({ 
       status: 'error', 
       message: error.message 

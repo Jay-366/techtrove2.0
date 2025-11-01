@@ -36,7 +36,7 @@ export default function ChatPage() {
   const [selectedAgent, setSelectedAgent] = useState('ai-agent');
   const [showInfoDrawer, setShowInfoDrawer] = useState(false);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
-  const { messages, send, pending, error, clearMessages } = useAIBoxChat();
+  const { messages, send, pending, error, clearMessages, confirmingAction, executeConfirmed } = useAIBoxChat();
   const messagesContainerRef = useRef(null);
 
   useEffect(() => {
@@ -520,6 +520,85 @@ export default function ChatPage() {
                     }}
                   >
                     {msg.content.trim()}
+                    
+                    {/* Confirmation buttons */}
+                    {msg.requiresConfirmation && msg.detectedActions && (
+                      <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(80, 96, 108, 0.5)' }}>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {msg.detectedActions.map((action, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2 py-1 rounded text-xs"
+                              style={{
+                                backgroundColor: 'rgba(251, 237, 224, 0.1)',
+                                color: 'rgba(251, 237, 224, 0.8)',
+                                border: '1px solid rgba(251, 237, 224, 0.2)'
+                              }}
+                            >
+                              {action.description}
+                            </span>
+                          ))}
+                        </div>
+                        <button
+                          onClick={() => {
+                            // Get original message from the confirmation message itself
+                            const originalMsg = msg.originalMessage || (confirmingAction?.originalMessage);
+                            const email = msg.email || (confirmingAction?.email) || 'user@example.com';
+                            if (originalMsg) {
+                              executeConfirmed(originalMsg, email);
+                            } else {
+                              console.error('Original message not found for confirmation');
+                            }
+                          }}
+                          className="px-4 py-2 rounded-lg transition-all duration-200 font-medium"
+                          style={{
+                            backgroundColor: '#FBede0',
+                            color: '#161823',
+                            border: 'none'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.opacity = '0.9';
+                            e.currentTarget.style.transform = 'translateY(-1px)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.opacity = '1';
+                            e.currentTarget.style.transform = 'translateY(0)';
+                          }}
+                          disabled={pending}
+                        >
+                          Confirm & Execute
+                        </button>
+                      </div>
+                    )}
+                    
+                    {/* Status updates during execution */}
+                    {msg.isStatusTracking && msg.metadata?.statusUpdates && msg.metadata.statusUpdates.length > 0 && (
+                      <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(80, 96, 108, 0.5)' }}>
+                        {msg.metadata.statusUpdates.map((update, idx) => (
+                          <div
+                            key={idx}
+                            className="text-xs mb-1 flex items-center gap-2"
+                            style={{
+                              color: update.status === 'success' 
+                                ? 'rgba(34, 197, 94, 0.8)'
+                                : update.status === 'error'
+                                ? 'rgba(220, 38, 38, 0.8)'
+                                : 'rgba(251, 237, 224, 0.6)'
+                            }}
+                          >
+                            <span>
+                              {update.status === 'success' ? '✅' : update.status === 'error' ? '❌' : '⏳'}
+                            </span>
+                            <span>{update.message}</span>
+                          </div>
+                        ))}
+                        {pending && (
+                          <div className="text-xs mt-2" style={{ color: 'rgba(251, 237, 224, 0.5)' }}>
+                            Processing...
+                          </div>
+                        )}
+                      </div>
+                    )}
                     
                     {/* Show backend logs - visible in chat for transparency */}
                     {msg.metadata?.logs && msg.metadata.logs.length > 0 && (

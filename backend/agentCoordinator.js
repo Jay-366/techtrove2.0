@@ -41,11 +41,42 @@ export class AgentCoordinator {
   }
 
   /**
+   * Detect actions without executing (for confirmation step)
+   * @param {string} userPrompt - User's request
+   * @returns {Promise<Object>} Detected actions info
+   */
+  async detectActions(userPrompt) {
+    const actionTypes = this.detectRequestTypes(userPrompt);
+    
+    const actionDescriptions = {
+      calendar: 'Schedule calendar event',
+      email: 'Send email',
+      invoice: 'Create invoice',
+      payment: 'Generate payment link',
+      general: 'General response'
+    };
+    
+    const detectedActions = actionTypes
+      .filter(type => type !== 'general')
+      .map(type => ({
+        type,
+        description: actionDescriptions[type] || type
+      }));
+    
+    return {
+      hasActions: detectedActions.length > 0,
+      actions: detectedActions,
+      actionTypes: actionTypes
+    };
+  }
+
+  /**
    * Process user request and coordinate appropriate agents
    * @param {string} userPrompt - User's request
+   * @param {boolean} executeMode - If false, only detect actions. If true, execute them.
    * @returns {Promise<Object>} Coordinated result from all agents
    */
-  async processRequest(userPrompt) {
+  async processRequest(userPrompt, executeMode = true) {
     this.results = {
       message: '',
       calendar: null,
@@ -53,23 +84,35 @@ export class AgentCoordinator {
       invoice: null,
       payment: null,
       actions: [],
-      logs: [] // Store backend processing logs for frontend display
+      logs: [], // Store backend processing logs for frontend display
+      statusUpdates: [] // Store status updates for frontend progress display
     };
 
     // Detect what types of requests this is (can be multiple)
     const actionTypes = this.detectRequestTypes(userPrompt);
     this.actionTypes = actionTypes; // Store as instance variable for use in other methods
+    
+    // If not in execute mode, return detection results
+    if (!executeMode) {
+      return this.detectActions(userPrompt);
+    }
+    
     this.results.logs.push({ 
       timestamp: new Date().toISOString(), 
       message: `[Coordinator] Detected action types: ${actionTypes.join(', ')}` 
     });
+    this.addStatusUpdate('Content generated', 'success');
     console.log(`[Coordinator] Detected action types: ${actionTypes.join(', ')}`);
 
     // Process actions in logical order (create resources first, then send notifications)
     
     // 1. Handle invoice requests first (creates files that might be needed for email)
     if (actionTypes.includes('invoice')) {
+      this.addStatusUpdate('Creating invoice...', 'progress');
       await this.handleInvoiceRequest(userPrompt);
+      if (this.results.invoice?.status === 'CREATED') {
+        this.addStatusUpdate('Invoice created', 'success');
+      }
     }
     
     // 2. Handle payment requests - Auto-create when invoice + email detected OR explicitly requested
@@ -77,23 +120,48 @@ export class AgentCoordinator {
                                (actionTypes.includes('invoice') && actionTypes.includes('email'));
     
     if (shouldCreatePayment && this.results.invoice?.status === 'CREATED') {
+      this.addStatusUpdate('Generating payment link...', 'progress');
       await this.handlePaymentRequest(userPrompt);
+      if (this.results.payment?.checkoutUrl) {
+        this.addStatusUpdate('Payment link generated', 'success');
+      }
     }
     
     // 3. Handle calendar requests
     if (actionTypes.includes('calendar')) {
+      this.addStatusUpdate('Creating calendar event...', 'progress');
       await this.handleCalendarRequest(userPrompt);
+      if (this.results.calendar?.status === 'CREATED') {
+        this.addStatusUpdate('Calendar event created', 'success');
+      }
     }
     
     // 4. Handle email requests last (might include attachments + payment links)
     if (actionTypes.includes('email')) {
+      this.addStatusUpdate('Sending email...', 'progress');
       await this.handleEmailRequest(userPrompt);
+      if (this.results.email?.status === 'SENT') {
+        this.addStatusUpdate('Email sent', 'success');
+      }
     }
 
     // Always get GPT response (with context about actions taken)
     await this.handleGPTResponse(userPrompt);
 
     return this.results;
+  }
+
+  /**
+   * Add status update for frontend progress tracking
+   * @param {string} message - Status message
+   * @param {string} status - Status type: 'pending', 'progress', 'success', 'error'
+   */
+  addStatusUpdate(message, status = 'progress') {
+    this.results.statusUpdates.push({
+      message,
+      status,
+      timestamp: new Date().toISOString()
+    });
   }
 
   /**
@@ -648,8 +716,8 @@ export class AgentCoordinator {
  * @param {string} userId - User identifier
  * @returns {Promise<Object>} Coordinated result
  */
-export async function coordinateAgents(userPrompt, userId = 'demoUser') {
+export async function coordinateAgents(userPrompt, userId = 'demoUser', executeMode = true) {
   const coordinator = new AgentCoordinator(userId);
-  return await coordinator.processRequest(userPrompt);
+  return await coordinator.processRequest(userPrompt, executeMode);
 }
 
