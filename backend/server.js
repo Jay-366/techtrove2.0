@@ -46,8 +46,10 @@ app.get('/auth/google/start', (req, res) => {
   // In production we'd identify the user (req.session.userId etc.)
   // For hackathon we hardcode userId = "demoUser"
   const scopes = [
-    'https://www.googleapis.com/auth/calendar.events'
-  ];
+    "https://www.googleapis.com/auth/calendar.events",
+    "https://www.googleapis.com/auth/gmail.send",
+    "https://www.googleapis.com/auth/gmail.readonly"
+  ];  
 
   const url = oauth2Client.generateAuthUrl({
     access_type: 'offline', // we want refresh_token
