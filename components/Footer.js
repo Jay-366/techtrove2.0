@@ -1,11 +1,43 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+// Register ScrollTrigger plugin
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export default function Footer() {
+  const animatedTextRef = useRef(null);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  useEffect(() => {
+    if (animatedTextRef.current) {
+      // GSAP skew-in animation
+      gsap.from(animatedTextRef.current, {
+        scrollTrigger: {
+          trigger: animatedTextRef.current,
+          start: "top 85%",
+          end: "top 35%",
+          scrub: true,
+        },
+        skewX: 45,
+        opacity: 0,
+        duration: 2,
+      });
+    }
+
+    // Cleanup function
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, []);
 
   return (
     <footer className="w-full bg-black py-12 flex flex-col justify-center relative">
@@ -47,7 +79,8 @@ export default function Footer() {
           {/* Large Brand Name */}
           <div className="mb-8">
             <h1 
-              className="text-[3rem] sm:text-[4rem] md:text-[6rem] lg:text-[7rem] xl:text-[8rem] font-light leading-[0.8] tracking-tight text-left"
+              ref={animatedTextRef}
+              className="text-[3rem] sm:text-[4rem] md:text-[6rem] lg:text-[7rem] xl:text-[8rem] font-light leading-[0.8] tracking-tight text-left animated-text"
               style={{
                 background: 'linear-gradient(135deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
                 WebkitBackgroundClip: 'text',
