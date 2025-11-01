@@ -1,6 +1,11 @@
 import { gptAgent } from './agents/gptAgent.js';
 import { calendarAgent } from './agents/calendarAgent.js';
 import { eventParser } from './agents/eventParser.js';
+import { emailAgent, createCalendarButton, createCalendarLink } from './agents/emailAgent.js';
+import { emailParser } from './agents/emailParser.js';
+import { invoiceAgent } from './agents/invoiceAgent.js';
+import { invoiceParser } from './agents/invoiceParser.js';
+import { paymentAgent, createPaymentLink, createHTMLEmailWithButton, createPaymentButton } from './agents/paymentAgent.js';
 
 /**
  * Agent Coordinator - Orchestrates multiple agents to fulfill user requests
@@ -21,16 +26,40 @@ export class AgentCoordinator {
     this.results = {
       message: '',
       calendar: null,
+      email: null,
+      invoice: null,
+      payment: null,
       actions: []
     };
 
-    // Detect what type of request this is
-    const requestType = this.detectRequestType(userPrompt);
-    console.log(`[Coordinator] Detected request type: ${requestType}`);
+    // Detect what types of requests this is (can be multiple)
+    const actionTypes = this.detectRequestTypes(userPrompt);
+    this.actionTypes = actionTypes; // Store as instance variable for use in other methods
+    console.log(`[Coordinator] Detected action types: ${actionTypes.join(', ')}`);
 
-    // Handle calendar requests
-    if (requestType === 'calendar') {
+    // Process actions in logical order (create resources first, then send notifications)
+    
+    // 1. Handle invoice requests first (creates files that might be needed for email)
+    if (actionTypes.includes('invoice')) {
+      await this.handleInvoiceRequest(userPrompt);
+    }
+    
+    // 2. Handle payment requests - Auto-create when invoice + email detected OR explicitly requested
+    const shouldCreatePayment = actionTypes.includes('payment') || 
+                               (actionTypes.includes('invoice') && actionTypes.includes('email'));
+    
+    if (shouldCreatePayment && this.results.invoice?.status === 'CREATED') {
+      await this.handlePaymentRequest(userPrompt);
+    }
+    
+    // 3. Handle calendar requests
+    if (actionTypes.includes('calendar')) {
       await this.handleCalendarRequest(userPrompt);
+    }
+    
+    // 4. Handle email requests last (might include attachments + payment links)
+    if (actionTypes.includes('email')) {
+      await this.handleEmailRequest(userPrompt);
     }
 
     // Always get GPT response (with context about actions taken)
@@ -40,18 +69,47 @@ export class AgentCoordinator {
   }
 
   /**
-   * Detect what type of request the user is making
+   * Detect what types of requests the user is making (can be multiple)
    * @param {string} prompt - User prompt
-   * @returns {string} Request type: 'calendar', 'general', etc.
+   * @returns {Array<string>} Array of request types: ['calendar', 'email', 'invoice']
    */
-  detectRequestType(prompt) {
+  detectRequestTypes(prompt) {
     const lowerPrompt = prompt.toLowerCase();
+    const actionTypes = [];
     
     if (/schedule|calendar|meeting|book|appointment|remind|event/i.test(lowerPrompt)) {
-      return 'calendar';
+      actionTypes.push('calendar');
     }
     
-    return 'general';
+    if (/send email|email|mail|message|write to|contact|inform.*email/i.test(lowerPrompt)) {
+      actionTypes.push('email');
+    }
+    
+    if (/create invoice|invoice|bill|billing|generate invoice|make invoice/i.test(lowerPrompt)) {
+      actionTypes.push('invoice');
+    }
+    
+    // Detect payment requests (for invoices with payment buttons)
+    if (/pay|payment|checkout|stripe|pay.*button|payment.*link/i.test(lowerPrompt)) {
+      actionTypes.push('payment');
+    }
+    
+    // If no specific actions detected, default to general
+    if (actionTypes.length === 0) {
+      actionTypes.push('general');
+    }
+    
+    return actionTypes;
+  }
+
+  /**
+   * Legacy method for backward compatibility
+   * @param {string} prompt - User prompt
+   * @returns {string} Primary request type
+   */
+  detectRequestType(prompt) {
+    const types = this.detectRequestTypes(prompt);
+    return types[0]; // Return first detected type for compatibility
   }
 
   /**
@@ -110,6 +168,235 @@ export class AgentCoordinator {
   }
 
   /**
+   * Handle email-related requests
+   * @param {string} userPrompt - User's email request
+   */
+  async handleEmailRequest(userPrompt) {
+    try {
+      console.log('[Coordinator] Processing email request...');
+      
+      // Parse email details from natural language
+      const emailDetails = await emailParser(userPrompt);
+      console.log('[Coordinator] Parsed email:', emailDetails);
+
+      // Check if we should attach an invoice file
+      let attachmentPath = null;
+      if (this.results.invoice?.status === 'CREATED') {
+        // Auto-attach invoice if:
+        // 1. User explicitly asks for attachment/include/excel
+        // 2. User says "email it" (referring to the invoice)
+        // 3. Both invoice and email actions are detected (likely wants invoice attached)
+        const shouldAttach = userPrompt.toLowerCase().includes('attach') || 
+                           userPrompt.toLowerCase().includes('include') ||
+                           userPrompt.toLowerCase().includes('send this') ||
+                           userPrompt.toLowerCase().includes('excel file') ||
+                           userPrompt.toLowerCase().includes('email it') ||
+                           (this.actionTypes.includes('invoice') && this.actionTypes.includes('email'));
+        
+        if (shouldAttach) {
+          attachmentPath = this.results.invoice.filePath;
+          console.log('[Coordinator] Will attach invoice file:', attachmentPath);
+        }
+      }
+
+      // Add payment link to email body if payment session exists
+      let enhancedBody = emailDetails.body;
+      let isHTML = false;
+      
+      // Check if we have calendar or payment info to include
+      const hasPayment = this.results.payment?.status === 'CREATED';
+      const hasCalendar = this.results.calendar?.status === 'CREATED';
+      
+      if (hasPayment || hasCalendar) {
+        // Create comprehensive HTML email with buttons
+        const options = {};
+        
+        if (hasPayment) {
+          options.payment = {
+            checkoutUrl: this.results.payment.checkoutUrl,
+            amount: this.results.payment.amount
+          };
+        }
+        
+        if (hasCalendar) {
+          // Format date for display
+          const eventDate = new Date(this.results.calendar.start).toLocaleDateString('en-MY', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: 'Asia/Kuala_Lumpur'
+          });
+          
+          options.calendar = {
+            calendarUrl: this.results.calendar.calendarLink,
+            eventTitle: this.results.calendar.eventSummary,
+            eventDate: eventDate
+          };
+        }
+        
+        enhancedBody = this.createComprehensiveHTMLEmail(emailDetails.body, options);
+        isHTML = true;
+        
+        if (hasPayment && hasCalendar) {
+          console.log('[Coordinator] Will include both calendar and payment buttons in email');
+        } else if (hasPayment) {
+          console.log('[Coordinator] Will include payment button in email');
+        } else if (hasCalendar) {
+          console.log('[Coordinator] Will include calendar button in email');
+        }
+      }
+
+      // Send email
+      const emailResult = await emailAgent({
+        userId: this.userId,
+        to: emailDetails.to,
+        subject: emailDetails.subject,
+        body: enhancedBody,
+        attachmentPath: attachmentPath,
+        isHTML: isHTML
+      });
+
+      this.results.email = emailResult;
+      this.results.actions.push({
+        type: 'email',
+        status: 'success',
+        result: emailResult
+      });
+      
+      console.log('[Coordinator] ✅ Email sent');
+
+    } catch (error) {
+      console.error('[Coordinator] Email error:', error.message);
+      
+      if (error.needAuth) {
+        this.results.email = {
+          error: 'Gmail not connected',
+          authRequired: true,
+          authUrl: error.authUrl,
+          message: 'Gmail connection required'
+        };
+      } else {
+        this.results.email = {
+          error: error.message,
+          message: 'Failed to send email'
+        };
+      }
+      
+      this.results.actions.push({
+        type: 'email',
+        status: 'error',
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * Handle invoice-related requests
+   * @param {string} userPrompt - User's invoice request
+   */
+  async handleInvoiceRequest(userPrompt) {
+    try {
+      console.log('[Coordinator] Processing invoice request...');
+      
+      // Parse invoice details from natural language
+      const invoiceDetails = await invoiceParser(userPrompt);
+      console.log('[Coordinator] Parsed invoice:', invoiceDetails);
+
+      // Create invoice
+      const invoiceResult = await invoiceAgent({
+        userId: this.userId,
+        clientName: invoiceDetails.clientName,
+        serviceDescription: invoiceDetails.serviceDescription,
+        amount: invoiceDetails.amount,
+        invoiceNumber: invoiceDetails.invoiceNumber,
+        dueDate: invoiceDetails.dueDate,
+        companyName: invoiceDetails.companyName,
+        companyEmail: invoiceDetails.companyEmail
+      });
+
+      this.results.invoice = invoiceResult;
+      this.results.actions.push({
+        type: 'invoice',
+        status: 'success',
+        result: invoiceResult
+      });
+      
+      console.log('[Coordinator] ✅ Invoice created');
+
+    } catch (error) {
+      console.error('[Coordinator] Invoice error:', error.message);
+      
+      this.results.invoice = {
+        error: error.message,
+        message: 'Failed to create invoice'
+      };
+      
+      this.results.actions.push({
+        type: 'invoice',
+        status: 'error',
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * Handle payment-related requests
+   * @param {string} userPrompt - User's payment request
+   */
+  async handlePaymentRequest(userPrompt) {
+    try {
+      console.log('[Coordinator] Processing payment request...');
+      
+      // Use invoice data for payment
+      const invoice = this.results.invoice;
+      if (!invoice || invoice.status !== 'CREATED') {
+        throw new Error('No invoice available for payment creation');
+      }
+
+      // Extract email for customer pre-fill from prompt or use a default
+      let customerEmail = null;
+      const emailMatch = userPrompt.match(/[\w\.-]+@[\w\.-]+\.\w+/);
+      if (emailMatch) {
+        customerEmail = emailMatch[0];
+      }
+
+      // Create payment session
+      const paymentResult = await paymentAgent({
+        amount: invoice.amount,
+        description: `${invoice.serviceDescription} - ${invoice.clientName}`,
+        customerEmail: customerEmail,
+        invoiceNumber: invoice.invoiceNumber
+      });
+
+      this.results.payment = paymentResult;
+      this.results.actions.push({
+        type: 'payment',
+        status: 'success',
+        result: paymentResult
+      });
+      
+      console.log('[Coordinator] ✅ Payment session created');
+
+    } catch (error) {
+      console.error('[Coordinator] Payment error:', error.message);
+      
+      this.results.payment = {
+        error: error.message,
+        message: 'Failed to create payment session'
+      };
+      
+      this.results.actions.push({
+        type: 'payment',
+        status: 'error',
+        error: error.message
+      });
+    }
+  }
+
+  /**
    * Get GPT response with context about actions taken
    * @param {string} userPrompt - Original user prompt
    */
@@ -123,6 +410,18 @@ export class AgentCoordinator {
       } else if (this.results.calendar?.authRequired) {
         systemContext += ` The user asked to schedule something, but Google Calendar needs to be connected. Mention this in a helpful way.`;
       }
+      
+      if (this.results.email?.status === 'SENT') {
+        systemContext += ` The user just asked to send an email, and you successfully sent it. Confirm this naturally in your response. Email sent to: ${this.results.email.to} with subject: "${this.results.email.subject}".`;
+      } else if (this.results.email?.authRequired) {
+        systemContext += ` The user asked to send an email, but Gmail needs to be connected. Mention this in a helpful way.`;
+      }
+      
+      if (this.results.invoice?.status === 'CREATED') {
+        systemContext += ` The user just asked to create an invoice, and you successfully created it. Confirm this naturally in your response. Invoice #${this.results.invoice.invoiceNumber} for ${this.results.invoice.clientName} for $${this.results.invoice.amount} has been created and saved as ${this.results.invoice.filename}.`;
+      } else if (this.results.invoice?.error) {
+        systemContext += ` The user asked to create an invoice, but there was an error. Mention this and suggest they try again with more details.`;
+      }
 
       // Get GPT response
       const gptResponse = await gptAgent(userPrompt, systemContext);
@@ -134,6 +433,146 @@ export class AgentCoordinator {
       console.error('[Coordinator] GPT error:', error.message);
       this.results.message = `I encountered an error: ${error.message}`;
     }
+  }
+
+  /**
+   * Create comprehensive HTML email with payment and/or calendar buttons
+   * @param {string} originalBody - Original email body text
+   * @param {Object} options - Options object
+   * @param {Object} [options.payment] - Payment details {checkoutUrl, amount}
+   * @param {Object} [options.calendar] - Calendar details {calendarUrl, eventTitle, eventDate}
+   * @returns {string} HTML email body
+   */
+  createComprehensiveHTMLEmail(originalBody, options = {}) {
+    const { payment, calendar } = options;
+    
+    // Convert plain text to HTML paragraphs
+    const htmlBody = originalBody
+      .split('\n\n')
+      .map(paragraph => paragraph.trim())
+      .filter(paragraph => paragraph.length > 0)
+      .map(paragraph => `<p style="margin: 0 0 16px 0; line-height: 1.5; color: #374151;">${paragraph}</p>`)
+      .join('');
+
+    // Determine header title based on content
+    let headerTitle = 'Meeting & Information';
+    if (payment && calendar) {
+      headerTitle = 'Meeting & Payment';
+    } else if (payment) {
+      headerTitle = 'Invoice & Payment';
+    } else if (calendar) {
+      headerTitle = 'Meeting Invitation';
+    }
+
+    let sectionsHTML = '';
+    
+    // Add calendar section if present
+    if (calendar) {
+      sectionsHTML += `
+      <!-- Calendar Section -->
+      <div style="margin: 32px 0; 
+                  padding: 24px; 
+                  background-color: #eff6ff; 
+                  border-radius: 8px; 
+                  border-left: 4px solid #2563EB;">
+        <h3 style="margin: 0 0 16px 0; 
+                   font-size: 18px; 
+                   color: #2563EB; 
+                   font-weight: bold;">
+          📅 Meeting Details
+        </h3>
+        <p style="margin: 0 0 20px 0; 
+                  color: #6B7280; 
+                  line-height: 1.5;">
+          Click the button below to view the meeting details in your Google Calendar.
+        </p>
+        
+        ${createCalendarButton(calendar.calendarUrl, calendar.eventTitle, calendar.eventDate)}
+      </div>`;
+    }
+    
+    // Add payment section if present
+    if (payment) {
+      sectionsHTML += `
+      <!-- Payment Section -->
+      <div style="margin: 32px 0; 
+                  padding: 24px; 
+                  background-color: #f8fafc; 
+                  border-radius: 8px; 
+                  border-left: 4px solid #635BFF;">
+        <h3 style="margin: 0 0 16px 0; 
+                   font-size: 18px; 
+                   color: #635BFF; 
+                   font-weight: bold;">
+          💳 Ready to Pay?
+        </h3>
+        <p style="margin: 0 0 20px 0; 
+                  color: #6B7280; 
+                  line-height: 1.5;">
+          Click the button below to securely complete your payment through Stripe.
+        </p>
+        
+        ${createPaymentButton(payment.checkoutUrl, payment.amount)}
+      </div>`;
+    }
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${headerTitle}</title>
+</head>
+<body style="margin: 0; 
+            padding: 20px; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; 
+            background-color: #f9fafb; 
+            color: #374151;">
+  
+  <div style="max-width: 600px; 
+              margin: 0 auto; 
+              background-color: #ffffff; 
+              border-radius: 8px; 
+              box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); 
+              overflow: hidden;">
+    
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%); 
+                color: white; 
+                padding: 24px; 
+                text-align: center;">
+      <h1 style="margin: 0; 
+                 font-size: 24px; 
+                 font-weight: bold;">
+        ${headerTitle}
+      </h1>
+    </div>
+    
+    <!-- Content -->
+    <div style="padding: 32px 24px;">
+      ${htmlBody}
+      
+      ${sectionsHTML}
+      
+      <!-- Footer Note -->
+      <div style="margin-top: 32px; 
+                  padding-top: 24px; 
+                  border-top: 1px solid #e5e7eb;">
+        <p style="margin: 0; 
+                  font-size: 14px; 
+                  color: #6B7280; 
+                  text-align: center; 
+                  line-height: 1.5;">
+          If you have any questions, please don't hesitate to contact us.<br>
+          <strong>Thank you!</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+  
+</body>
+</html>`;
   }
 }
 
