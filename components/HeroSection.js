@@ -200,8 +200,8 @@ export default function HeroSection() {
       <div 
         className="absolute bottom-0 right-0 z-40"
         style={{
-          width: '150px',
-          height: '50px',
+          width: '250px',
+          height: '100px',
           backgroundColor: '#000000',
           pointerEvents: 'none'
         }}
@@ -209,22 +209,53 @@ export default function HeroSection() {
 
       {/* Hide Spline Badge */}
       <style jsx global>{`
-        /* Hide the "Built with Spline" badge */
+        /* Hide the "Built with Spline" badge - Comprehensive targeting */
         #spline-watermark,
         .spline-watermark,
         [data-spline-watermark],
         .spline-badge,
         .watermark,
         div[style*="position: absolute"][style*="bottom"][style*="right"],
-        div[style*="position: fixed"][style*="bottom"][style*="right"] {
+        div[style*="position: fixed"][style*="bottom"][style*="right"],
+        div[style*="position: absolute"][style*="bottom: 16px"],
+        div[style*="position: absolute"][style*="right: 16px"],
+        div[style*="position: absolute"][style*="bottom: 1rem"],
+        div[style*="position: absolute"][style*="right: 1rem"] {
+          display: none !important;
+          visibility: hidden !important;
+          opacity: 0 !important;
+          pointer-events: none !important;
+          z-index: -999 !important;
+        }
+
+        /* Target Spline watermark by common patterns */
+        div[style*="color: rgb(180, 180, 180)"],
+        div[style*="color: #b4b4b4"],
+        div[style*="font-size: 12px"],
+        div[style*="font-size: 0.75rem"],
+        a[href*="spline.design"],
+        a[href*="spline"],
+        div:has(a[href*="spline.design"]),
+        canvas + div:last-child,
+        canvas + div + div:last-child,
+        canvas ~ div:last-child {
           display: none !important;
           visibility: hidden !important;
           opacity: 0 !important;
         }
 
-        /* Additional targeting for Spline watermark */
-        canvas + div,
-        canvas + div + div {
+        /* Hide any text containing "Spline" or "Built with" */
+        div:contains("Spline"),
+        div:contains("Built with"),
+        div:contains("spline.design") {
+          display: none !important;
+        }
+
+        /* Additional canvas sibling targeting */
+        canvas + *,
+        canvas ~ div[style*="position"],
+        canvas ~ div[style*="bottom"],
+        canvas ~ div[style*="right"] {
           display: none !important;
         }
       `}</style>
