@@ -316,14 +316,14 @@ export default function MyAgentsPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#161823" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "#000000" }}>
       {/* Navigation */}
       <Navigation />
       
       {/* header */}
-      <section className="max-w-[1400px] mx-auto px-6 pt-24 pb-4 bg-gradient-to-r from-[#161823] to-[#161823] text-[#f8ede0]">
+      <section className="max-w-[1400px] mx-auto px-6 pt-24 pb-4 text-white" style={{ backgroundColor: "#000000" }}>
         {/* breadcrumbs */}
-        <nav className="mb-4 text-sm text-[#5d606c]">
+        <nav className="mb-4 text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
           <Link
             href="/"
             className="hover:underline cursor-pointer"
@@ -333,7 +333,7 @@ export default function MyAgentsPage() {
           <span className="mx-1">&gt;</span>{" "}
           <Link
             href="/agents"
-            className="hover:underline cursor-pointer text-[#f8ede0]"
+            className="hover:underline cursor-pointer text-white"
           >
             My Agents
           </Link>
@@ -341,9 +341,14 @@ export default function MyAgentsPage() {
 
         {/* title + subtitle */}
         <h1 className="text-3xl md:text-4xl font-bold mb-2">
-          My Agents
+          My <span style={{ 
+            background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>Agents</span>
         </h1>
-        <p className="text-base md:text-lg text-[#5d606c] mb-6">
+        <p className="text-base md:text-lg mb-6" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
           Track the agents you subscribe to—and the ones you build.
         </p>
 
@@ -389,7 +394,7 @@ export default function MyAgentsPage() {
           <div className="flex items-center gap-2">
             {/* search bar */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#5d606c]" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" style={{ color: 'rgba(255, 255, 255, 0.6)' }} />
               <input
                 type="text"
                 placeholder="Search agents..."
@@ -397,13 +402,26 @@ export default function MyAgentsPage() {
                 onChange={(e) =>
                   setSearchQuery(e.target.value)
                 }
-                className="pl-9 pr-9 py-2 h-10 rounded-md border border-[#5d606c] bg-transparent text-sm text-[#f8ede0] placeholder:text-[#5d606c] focus:border-[#f8ede0] focus:outline-none focus:shadow-[0_0_15px_rgba(248,237,224,0.1)] transition-all duration-300"
-                style={{ width: "200px" }}
+                className="pl-9 pr-9 py-2 h-10 rounded-md border bg-transparent text-sm text-white focus:outline-none transition-all duration-300"
+                style={{ 
+                  width: "200px",
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)'
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = 'oklch(89.9% 0.061 343.231)';
+                  e.currentTarget.style.boxShadow = '0 0 15px rgba(255, 255, 255, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#5d606c] hover:text-[#f8ede0] transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors hover:text-white"
+                  style={{ color: 'rgba(255, 255, 255, 0.6)' }}
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -417,7 +435,11 @@ export default function MyAgentsPage() {
                   setShowSortMenu(!showSortMenu);
                   setShowFilterMenu(false);
                 }}
-                className="flex items-center gap-1 rounded-md border border-[#5d606c] px-3 py-2 h-10 text-sm text-[#f8ede0] hover:bg-[#5d606c]/20 hover:border-[#f8ede0] hover:shadow-[0_0_15px_rgba(248,237,224,0.1)] transition-all duration-300"
+                className="flex items-center gap-1 rounded-md border px-3 py-2 h-10 text-sm text-white transition-all duration-300 hover:bg-white hover:bg-opacity-10"
+                style={{ 
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)'
+                }}
               >
                 <ArrowUpDown className="w-4 h-4" />
                 <span>Sort</span>
@@ -438,7 +460,10 @@ export default function MyAgentsPage() {
               </button>
 
               {showSortMenu && (
-                <div className="absolute top-full right-0 mt-2 w-48 bg-[#1C1F2B] border border-[#5d606c] rounded-md shadow-lg z-10 max-h-64 overflow-y-auto">
+                <div className="absolute top-full right-0 mt-2 w-48 rounded-md shadow-lg z-10 max-h-64 overflow-y-auto" style={{
+                  backgroundColor: '#000000',
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}>
                   {[
                     { value: "name", label: "Name" },
                     { value: "price", label: "Price" },
@@ -455,9 +480,13 @@ export default function MyAgentsPage() {
                       }
                       className={`w-full text-left px-4 py-2 text-sm transition-colors ${
                         sortBy === option.value
-                          ? "bg-[#5d606c] text-[#f8ede0] font-medium"
-                          : "text-[#f8ede0] hover:bg-[#5d606c] transition"
+                          ? "text-white font-medium hover:bg-white hover:bg-opacity-10"
+                          : "text-white hover:bg-white hover:bg-opacity-10"
                       }`}
+                      style={sortBy === option.value ? {
+                        background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
+                        color: '#000000'
+                      } : {}}
                     >
                       {option.label}{" "}
                       {sortBy === option.value &&
@@ -477,14 +506,20 @@ export default function MyAgentsPage() {
                   setShowFilterMenu(!showFilterMenu);
                   setShowSortMenu(false);
                 }}
-                className="flex items-center gap-1 rounded-md border border-[#5d606c] px-3 py-2 h-10 text-sm text-[#f8ede0] hover:bg-[#5d606c]/20 hover:border-[#f8ede0] hover:shadow-[0_0_15px_rgba(248,237,224,0.1)] transition-all duration-300"
+                className="flex items-center gap-1 rounded-md border px-3 py-2 h-10 text-sm text-white transition-all duration-300 hover:bg-white hover:bg-opacity-10"
+                style={{ 
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)'
+                }}
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 <span>Filter</span>
                 {(selectedCategories.length > 0 ||
                   priceRange[0] > 100 ||
                   priceRange[1] < 2000) && (
-                  <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[#f8ede0] text-[#161823] text-[10px] font-semibold">
+                  <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold text-black" style={{
+                    background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))'
+                  }}>
                     {selectedCategories.length}
                   </span>
                 )}
@@ -505,7 +540,10 @@ export default function MyAgentsPage() {
               </button>
 
               {showFilterMenu && (
-                <div className="absolute top-full right-0 mt-2 w-56 bg-[#1C1F2B] border border-[#5d606c] rounded-md shadow-lg z-10 py-2 max-h-80 overflow-y-auto scrollbar-hide">
+                <div className="absolute top-full right-0 mt-2 w-56 rounded-md shadow-lg z-10 py-2 max-h-80 overflow-y-auto scrollbar-hide" style={{
+                  backgroundColor: '#000000',
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}>
                   <style jsx>{`
                     .scrollbar-hide::-webkit-scrollbar {
                       display: none;
@@ -518,7 +556,7 @@ export default function MyAgentsPage() {
 
                   {/* categories */}
                   <div className="px-4 py-2">
-                    <h4 className="text-sm font-semibold text-[#f8ede0] mb-2">
+                    <h4 className="text-sm font-semibold text-white mb-2">
                       Category
                     </h4>
                     <div className="space-y-1">
@@ -533,11 +571,13 @@ export default function MyAgentsPage() {
                             onClick={() =>
                               toggleCategory(category)
                             }
-                            className="w-full flex items-center gap-3 px-2 py-2 text-sm text-[#f8ede0] hover:bg-[rgba(93,96,108,0.3)] transition-colors rounded"
+                            className="w-full flex items-center gap-3 px-2 py-2 text-sm text-white hover:bg-white hover:bg-opacity-10 transition-colors rounded"
                           >
                             <span className="flex items-center justify-center w-4 h-4">
                               {isSelected && (
-                                <span className="w-2 h-2 rounded-full bg-[#f8ede0]" />
+                                <span className="w-2 h-2 rounded-full" style={{
+                                  background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))'
+                                }} />
                               )}
                             </span>
                             <span
@@ -556,11 +596,11 @@ export default function MyAgentsPage() {
                   </div>
 
                   {/* divider */}
-                  <div className="my-2 border-t border-[#5d606c]" />
+                  <div className="my-2 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }} />
 
                   {/* price range */}
                   <div className="px-4 py-2">
-                    <h4 className="text-sm font-semibold text-[#f8ede0] mb-3">
+                    <h4 className="text-sm font-semibold text-white mb-3">
                       Price Range
                     </h4>
                     <div className="space-y-3">
@@ -574,7 +614,7 @@ export default function MyAgentsPage() {
                         }
                         className="w-full"
                       />
-                      <div className="flex items-center justify-between text-xs text-[#f8ede0]/80">
+                      <div className="flex items-center justify-between text-xs" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                         <span>
                           {priceRange[0]} tokens
                         </span>
@@ -590,14 +630,15 @@ export default function MyAgentsPage() {
                     priceRange[0] > 100 ||
                     priceRange[1] < 2000) && (
                     <>
-                      <div className="my-2 border-t border-[#5d606c]" />
+                      <div className="my-2 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }} />
                       <div className="px-4 py-2">
                         <button
-                        onClick={() => {
-                          setSelectedCategories([]);
-                          setPriceRange([100, 2000]);
-                        }}
-                          className="w-full px-3 py-2 rounded-md border border-[#5d606c] text-sm text-[#f8ede0] hover:bg-[#5d606c] transition-all"
+                          onClick={() => {
+                            setSelectedCategories([]);
+                            setPriceRange([100, 2000]);
+                          }}
+                          className="w-full px-3 py-2 rounded-md border text-sm text-white transition-all hover:bg-white hover:bg-opacity-10"
+                          style={{ border: '1px solid rgba(255, 255, 255, 0.2)' }}
                         >
                           Clear Filters
                         </button>
@@ -619,14 +660,18 @@ export default function MyAgentsPage() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2
-                  className="text-xl font-semibold"
-                  style={{ color: "#f8ede0" }}
+                  className="text-xl font-semibold text-white"
                 >
-                  Your Subscriptions
+                  Your <span style={{ 
+                    background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text'
+                  }}>Subscriptions</span>
                 </h2>
                 <p
                   className="text-sm"
-                  style={{ color: "#5d606c" }}
+                  style={{ color: 'rgba(255, 255, 255, 0.6)' }}
                 >
                   {filteredAndSortedAgents.length} of{" "}
                   {subscribedAgents.length} agents
@@ -659,7 +704,7 @@ export default function MyAgentsPage() {
 
             {filteredAndSortedAgents.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-[#5d606c] text-lg">
+                <p className="text-lg" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
                   No agents found matching your criteria.
                 </p>
                 <button
@@ -668,7 +713,11 @@ export default function MyAgentsPage() {
                     setSelectedCategories([]);
                     setPriceRange([100, 2000]);
                   }}
-                  className="mt-4 px-6 py-2 rounded-md border border-[#5d606c] text-sm text-[#f8ede0]/60 hover:bg-[#5d606c]/20 hover:text-[#f8ede0] transition-all"
+                  className="mt-4 px-6 py-2 rounded-md border text-sm transition-all hover:bg-white hover:bg-opacity-10"
+                  style={{ 
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    color: 'rgba(255, 255, 255, 0.6)'
+                  }}
                 >
                   Clear all filters
                 </button>
@@ -683,14 +732,18 @@ export default function MyAgentsPage() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2
-                  className="text-xl font-semibold"
-                  style={{ color: "#f8ede0" }}
+                  className="text-xl font-semibold text-white"
                 >
-                  Agents You Created
+                  Agents You <span style={{ 
+                    background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text'
+                  }}>Created</span>
                 </h2>
                 <p
                   className="text-sm"
-                  style={{ color: "#5d606c" }}
+                  style={{ color: 'rgba(255, 255, 255, 0.6)' }}
                 >
                   {filteredAndSortedAgents.length} of{" "}
                   {createdAgents.length} agents
@@ -699,16 +752,15 @@ export default function MyAgentsPage() {
 
               <button
                 onClick={handleCreateAgent}
-                className="px-6 py-3 rounded-xl flex items-center gap-2 transition-all duration-200 font-medium"
+                className="px-6 py-3 rounded-xl flex items-center gap-2 transition-all duration-200 font-medium text-black"
                 style={{
-                  backgroundColor: "#f8ede0",
-                  color: "#161823",
+                  background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform =
                     "translateY(-2px)";
                   e.currentTarget.style.boxShadow =
-                    "0 0 20px rgba(248, 237, 224, 0.3)";
+                    "0 0 20px rgba(255, 255, 255, 0.3)";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform =
@@ -751,7 +803,7 @@ export default function MyAgentsPage() {
             {filteredAndSortedAgents.length === 0 &&
               createdAgents.length > 0 && (
                 <div className="text-center py-12">
-                  <p className="text-[#5d606c] text-lg">
+                  <p className="text-lg" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
                     No agents found matching your criteria.
                   </p>
                   <button
@@ -760,7 +812,11 @@ export default function MyAgentsPage() {
                       setSelectedCategories([]);
                       setPriceRange([100, 2000]);
                     }}
-                    className="mt-4 px-6 py-2 rounded-md border border-[#5d606c] text-sm text-[#f8ede0]/60 hover:bg-[#5d606c]/20 hover:text-[#f8ede0] transition-all"
+                    className="mt-4 px-6 py-2 rounded-md border text-sm transition-all hover:bg-white hover:bg-opacity-10"
+                    style={{ 
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      color: 'rgba(255, 255, 255, 0.6)'
+                    }}
                   >
                     Clear all filters
                   </button>
@@ -772,47 +828,45 @@ export default function MyAgentsPage() {
               <div
                 className="rounded-3xl p-16 text-center"
                 style={{
-                  backgroundColor: "#1C1F2B",
-                  border:
-                    "2px dashed rgba(93, 96, 108, 0.4)",
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  border: '2px dashed rgba(255, 255, 255, 0.2)',
                 }}
               >
                 <div className="mb-4">
                   <div
                     className="w-24 h-24 rounded-full mx-auto flex items-center justify-center"
-                    style={{ backgroundColor: "#161823" }}
+                    style={{ 
+                      background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
+                    }}
                   >
                     <Plus
-                      className="w-12 h-12"
-                      style={{ color: "#f8ede0" }}
+                      className="w-12 h-12 text-black"
                     />
                   </div>
                 </div>
                 <h3
-                  className="text-2xl font-semibold mb-2"
-                  style={{ color: "#f8ede0" }}
+                  className="text-2xl font-semibold mb-2 text-white"
                 >
                   No Agents Created Yet
                 </h3>
                 <p
                   className="mb-6"
-                  style={{ color: "#5d606c" }}
+                  style={{ color: 'rgba(255, 255, 255, 0.6)' }}
                 >
                   Start monetizing your AI by creating and
                   uploading your first agent!
                 </p>
                 <button
                   onClick={handleCreateAgent}
-                  className="px-8 py-3 rounded-xl transition-all duration-200 font-medium"
+                  className="px-8 py-3 rounded-xl transition-all duration-200 font-medium text-black"
                   style={{
-                    backgroundColor: "#f8ede0",
-                    color: "#161823",
+                    background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform =
                       "translateY(-2px)";
                     e.currentTarget.style.boxShadow =
-                      "0 0 20px rgba(248, 237, 224, 0.3)";
+                      "0 0 20px rgba(255, 255, 255, 0.3)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform =

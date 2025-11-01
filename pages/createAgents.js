@@ -242,7 +242,7 @@ export default function CreateAgentPage() {
 
           {/* Category */}
           <div>
-            <Label className="block mb-3 text-sm font-medium text-[#f8ede0]">
+            <Label className="block mb-3 text-sm font-medium text-white">
               Category <span className="text-red-500">*</span>
             </Label>
             <div className="relative" ref={categoryDropdownRef}>
@@ -250,9 +250,10 @@ export default function CreateAgentPage() {
                 onClick={() =>
                   setShowCategoryDropdown(!showCategoryDropdown)
                 }
-                className="w-full h-12 px-4 rounded-md outline-none transition-all duration-300 bg-transparent border border-[#5d606c] text-left flex items-center justify-between hover:border-[#f8ede0]/60 hover:shadow-[0_0_15px_rgba(248,237,224,0.1)]"
+                className="w-full h-12 px-4 rounded-md outline-none transition-all duration-300 bg-transparent border text-left flex items-center justify-between hover:bg-white hover:bg-opacity-10"
                 style={{
-                  color: category ? "#f8ede0" : "#5d606c",
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: category ? "white" : "rgba(255, 255, 255, 0.6)",
                 }}
               >
                 <span>{category || "Select category"}</span>
@@ -260,7 +261,7 @@ export default function CreateAgentPage() {
               </button>
 
               {showCategoryDropdown && (
-                <div className="absolute top-full left-0 mt-2 w-full bg-[#1C1F2B] border border-[#5d606c] rounded-md shadow-lg z-10 max-h-64 overflow-y-auto scrollbar-hide">
+                <div className="absolute top-full left-0 mt-2 w-full bg-[rgba(255, 255, 255, 0.05)] border border-[#5d606c] rounded-md shadow-lg z-10 max-h-64 overflow-y-auto scrollbar-hide">
                   <style jsx>{`
                     .scrollbar-hide::-webkit-scrollbar {
                       display: none;
@@ -298,7 +299,7 @@ export default function CreateAgentPage() {
                             <div
                               className="w-2 h-2 rounded-full"
                               style={{
-                                backgroundColor: "#161823",
+                                backgroundColor: "rgba(255, 255, 255, 0.05)",
                               }}
                             />
                           )}
@@ -366,12 +367,12 @@ export default function CreateAgentPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Subscribers */}
               <div
-                className="rounded-md p-5 cursor-pointer transition-all duration-300 hover:shadow-[0_0_15px_rgba(248,237,224,0.1)]"
+                className="rounded-md p-5 cursor-pointer transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                 style={{
-                  backgroundColor: "#1C1F2B",
+                  backgroundColor: "rgba(255, 255, 255, 0.05)",
                   border: selectedAccessOptions.includes("subscribers")
-                    ? "1px solid #f8ede0"
-                    : "1px solid #5d606c",
+                    ? "1px solid oklch(89.9% 0.061 343.231)"
+                    : "1px solid rgba(255, 255, 255, 0.2)",
                 }}
                 onClick={() => toggleAccessOption("subscribers")}
               >
@@ -429,8 +430,8 @@ export default function CreateAgentPage() {
                           />
                           <Label className={`absolute left-4 transition-all duration-200 pointer-events-none ${
                             monthlyTokens && monthlyTokens.trim() !== ''
-                              ? '-top-2 text-xs text-[#f8ede0] bg-[#1C1F2B] px-1'
-                              : 'top-3 text-sm text-[#5d606c] peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#f8ede0] peer-focus:bg-[#1C1F2B] peer-focus:px-1'
+                              ? '-top-2 text-xs text-[#f8ede0] bg-[rgba(255, 255, 255, 0.05)] px-1'
+                              : 'top-3 text-sm text-[#5d606c] peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#f8ede0] peer-focus:bg-[rgba(255, 255, 255, 0.05)] peer-focus:px-1'
                           }`}>
                             Monthly Tokens
                           </Label>
@@ -448,7 +449,7 @@ export default function CreateAgentPage() {
               <div
                 className="rounded-md p-5 cursor-pointer transition-all duration-300 hover:shadow-[0_0_15px_rgba(248,237,224,0.1)]"
                 style={{
-                  backgroundColor: "#1C1F2B",
+                  backgroundColor: "rgba(255, 255, 255, 0.05)",
                   border: selectedAccessOptions.includes("payperuse")
                     ? "1px solid #f8ede0"
                     : "1px solid #5d606c",
@@ -504,8 +505,8 @@ export default function CreateAgentPage() {
                         />
                         <Label className={`absolute left-4 transition-all duration-200 pointer-events-none ${
                           tokensPerQuery && tokensPerQuery.trim() !== ''
-                            ? '-top-2 text-xs text-[#f8ede0] bg-[#1C1F2B] px-1'
-                            : 'top-3 text-sm text-[#5d606c] peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#f8ede0] peer-focus:bg-[#1C1F2B] peer-focus:px-1'
+                            ? '-top-2 text-xs text-[#f8ede0] bg-[rgba(255, 255, 255, 0.05)] px-1'
+                            : 'top-3 text-sm text-[#5d606c] peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#f8ede0] peer-focus:bg-[rgba(255, 255, 255, 0.05)] peer-focus:px-1'
                         }`}>
                           Tokens Per Query
                         </Label>
@@ -522,7 +523,7 @@ export default function CreateAgentPage() {
               <div
                 className="rounded-md p-5 cursor-pointer transition-all duration-300 hover:shadow-[0_0_15px_rgba(248,237,224,0.1)]"
                 style={{
-                  backgroundColor: "#1C1F2B",
+                  backgroundColor: "rgba(255, 255, 255, 0.05)",
                   border: selectedAccessOptions.includes("public")
                     ? "1px solid #f8ede0"
                     : "1px solid #5d606c",
@@ -557,7 +558,7 @@ export default function CreateAgentPage() {
                       Public (free access)
                     </h4>
                     <p className="text-sm mb-3 text-[#5d606c]">
-                      Anyone can access this agent freely — no payment
+                      Anyone can access this agent freely - no payment
                       required.
                     </p>
                     {selectedAccessOptions.includes("public") && (
@@ -574,7 +575,7 @@ export default function CreateAgentPage() {
             {selectedAccessOptions.length > 0 && (
               <div
                 className="mt-6 p-4 rounded-md border border-[#5d606c]"
-                style={{ backgroundColor: "#1C1F2B" }}
+                style={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
               >
                 <div className="text-sm text-[#5d606c]">
                   <span className="mr-2">Selected Options:</span>
@@ -609,7 +610,7 @@ export default function CreateAgentPage() {
             <div
               className="rounded-md p-4 border border-red-500"
               style={{
-                backgroundColor: "#1C1F2B",
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
               }}
             >
               <div className="flex items-start gap-3">
@@ -707,7 +708,7 @@ export default function CreateAgentPage() {
           {uploadSuccess && (
             <div
               className="rounded-md p-6 flex flex-col md:flex-row md:items-center md:justify-between border border-[#f8ede0] gap-4"
-              style={{ backgroundColor: "#1C1F2B" }}
+              style={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
             >
               <div className="flex items-start gap-3">
                 <Check className="w-6 h-6" style={{ color: "#f8ede0" }} />
@@ -755,13 +756,13 @@ export default function CreateAgentPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#161823]">
+    <div className="min-h-screen" style={{ backgroundColor: "#000000" }}>
       {/* Navigation */}
       <Navigation />
 
       {/* header / breadcrumb */}
-      <section className="max-w-[1400px] mx-auto px-6 pt-24 pb-0 bg-gradient-to-r from-[#161823] to-[#161823] text-[#f8ede0]">
-        <nav className="mb-4 text-sm text-[#5d606c]">
+      <section className="max-w-[1400px] mx-auto px-6 pt-24 pb-0 text-white" style={{ backgroundColor: "#000000" }}>
+        <nav className="mb-4 text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
           <Link href="/" className="hover:underline cursor-pointer">
             Home
           </Link>
@@ -772,7 +773,7 @@ export default function CreateAgentPage() {
           <span className="mx-1">&gt;</span>
           <Link
             href="/agents/create"
-            className="hover:underline cursor-pointer text-[#f8ede0]"
+            className="hover:underline cursor-pointer text-white"
           >
             Create Agent
           </Link>

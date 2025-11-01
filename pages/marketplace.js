@@ -191,7 +191,7 @@ export default function MyAgentsPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#161823' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#000000' }}>
       {/* Navigation */}
       <Navigation />
       
