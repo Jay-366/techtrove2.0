@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Bot, Search, Plus, Settings, Info, Calendar, Sparkles, MessageCircle, ChevronDown, Mail, FileText, CreditCard, Check, Clock, AlertCircle } from 'lucide-react';
 import { useAIBoxChat } from '../lib/useAIBoxChat';
 import SplitText from '../components/SplitText';
@@ -146,19 +147,22 @@ export default function ChatPage() {
             height: '60px',
           }}
         >
-          <Image
-            src="/intellibox.png"
-            alt="AIBox Logo"
-            width={28}
-            height={28}
-            style={{
-              objectFit: 'contain',
-            }}
-          />
-          <h2
-            style={{ color: '#FBede0', fontSize: '16px', fontWeight: 600 }}
-          >
-          </h2>
+          <Link href="/" className="flex items-center gap-2 transition-all duration-200 hover:opacity-80">
+            <Image
+              src="/intellibox.png"
+              alt="AIBox Logo"
+              width={28}
+              height={28}
+              style={{
+                objectFit: 'contain',
+              }}
+            />
+            <h2
+              style={{ color: '#FBede0', fontSize: '16px', fontWeight: 600 }}
+            >
+              TechTrove
+            </h2>
+          </Link>
         </div>
 
         {/* Sidebar Content */}
