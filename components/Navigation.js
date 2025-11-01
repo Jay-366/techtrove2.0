@@ -35,13 +35,13 @@ export default function Navbar() {
   const logoElement = (
     <Link href="/" className="flex items-center">
       <Image
-        src="/intellibox.svg"
+        src="/intellibox.png"
         alt="Intellibox Logo"
         width={30}
         height={30}
-        className="w-8 h-8"
+        className="w-6 h-6"
       />
-      <span className="ml-2 text-white font-semibold">IntelliBox</span>
+      <span className="m-1 text-white font-semibold">IntelliBox</span>
     </Link>
   );
 
