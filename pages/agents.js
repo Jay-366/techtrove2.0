@@ -15,6 +15,7 @@ import { TradingOracleCard } from "@/components/agents/TradingOracleCard";
 import { CreatedAgentCard } from "@/components/agents/CreatedAgentCard";
 import { Toggle, ToggleButtonGroup } from "@/components/agents/toggle-group";
 import { Slider } from "@/components/ui/slider";
+import Navigation from "@/components/Navigation";
 
 export default function MyAgentsPage() {
   // "subscribed" | "created"
@@ -293,7 +294,7 @@ export default function MyAgentsPage() {
   };
 
   const handleCreateAgent = () => {
-    window.location.href = "/agents/create";
+    window.location.href = "/createAgents";
   };
 
   const toggleCategory = (category) => {
@@ -316,6 +317,9 @@ export default function MyAgentsPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#161823" }}>
+      {/* Navigation */}
+      <Navigation />
+      
       {/* header */}
       <section className="max-w-[1400px] mx-auto px-6 pt-24 pb-4 bg-gradient-to-r from-[#161823] to-[#161823] text-[#f8ede0]">
         {/* breadcrumbs */}

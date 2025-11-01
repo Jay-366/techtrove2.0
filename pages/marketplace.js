@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { AgentCard } from '@/components/marketplace/AgentCard';
 import AgentFilters from '@/components/marketplace/AgentFilters';
 import { CategoryHeader } from '@/components/marketplace/CategoryHeader';
+import Navigation from '@/components/Navigation';
 
 // Agents data
 const AGENTS_DATA = [
@@ -191,6 +192,9 @@ export default function MyAgentsPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#161823' }}>
+      {/* Navigation */}
+      <Navigation />
+      
       {/* Category Header */}
       <CategoryHeader
         searchQuery={searchQuery}

@@ -13,6 +13,7 @@ import { Timeline } from "@/components/ui/timeline";
 import FileUpload from "@/components/ui/file-upload";
 import { useAccount, useSignMessage } from "wagmi";
 import lighthouse from "@lighthouse-web3/sdk";
+import Navigation from "@/components/Navigation";
 
 export default function CreateAgentPage() {
   // wallet hooks
@@ -1641,6 +1642,9 @@ export default function CreateAgentPage() {
 
   return (
     <div className="min-h-screen bg-[#161823]">
+      {/* Navigation */}
+      <Navigation />
+      
       {/* header (breadcrumb like CategoryHeader) */}
       <section className="max-w-[1400px] mx-auto px-6 pt-24 pb-0 bg-gradient-to-r from-[#161823] to-[#161823] text-[#f8ede0]">
         <nav className="mb-4 text-sm text-[#5d606c]">
