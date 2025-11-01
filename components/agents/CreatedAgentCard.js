@@ -99,8 +99,8 @@ export const CreatedAgentCard = React.forwardRef(function CreatedAgentCard(
     title = 'Trading Oracle',
     category = 'Trading',
     description = 'Advanced market analysis and trading strategies powered by AI',
-    price = 19,
-    pricePeriod = '/month',
+    price = 1000,
+    pricePeriod = 'tokens/query',
     rating = 4.8,
     users = 12500,
     revenue = '$1,240',
@@ -223,16 +223,6 @@ export const CreatedAgentCard = React.forwardRef(function CreatedAgentCard(
           <div className="flex items-center justify-between gap-2">
             {/* Price */}
             <div className="flex items-center gap-1">
-              <Image
-                src="/eth.svg"
-                alt="ETH"
-                width={16}
-                height={16}
-                className="opacity-80"
-              />
-              <span className="text-base font-bold text-[#f8ede0]">
-                ETH
-              </span>
               <span className="text-base font-bold text-[#f8ede0]">
                 {price}
               </span>

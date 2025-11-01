@@ -276,7 +276,7 @@ export default function MyAgentsPage() {
                     }
                     price={
                       typeof agent.price === 'number'
-                        ? `${agent.price} USDC/Sub`
+                        ? `${agent.price} tokens/query`
                         : agent.price
                     }
                   />

@@ -8,39 +8,12 @@ import {
   CheckCircle,
   AlertCircle,
 } from 'lucide-react';
-import { useAccount } from 'wagmi';
-import { parseEther } from 'viem';
-import { BridgeAndExecuteButton } from '@avail-project/nexus-widgets';
-import BridgeAndExecuteSection from '@/components/bridge/BridgeAndExecuteSection';
+// Token-based subscription model - no blockchain dependencies needed
 
-const AGENT_CONTRACT_ADDRESS =
-  '0xb443CCbB2efEDf9be8Bb087e8cAA393E3faB55Db';
-const SUBSCRIPTION_AMOUNT = '0.001'; // ETH
-const TARGET_CHAIN_ID = 421614; // Arbitrum Sepolia
+const SUBSCRIPTION_TOKENS = '10000'; // Monthly tokens
+const PAYMENT_PROCESSOR = 'IntelliBox Token System'; // Internal payment system
 
-const getChainName = (chainId) => {
-  const chainNames = {
-    1: 'Ethereum',
-    11155111: 'Ethereum Sepolia',
-    421614: 'Arbitrum Sepolia',
-    84532: 'Base Sepolia',
-    80002: 'Polygon Amoy',
-    11155420: 'Optimism Sepolia',
-  };
-  return chainNames[chainId] || `Chain ${chainId}`;
-};
-
-const getExplorerUrl = (chainId, txHash) => {
-  const explorers = {
-    1: `https://etherscan.io/tx/${txHash}`,
-    11155111: `https://sepolia.etherscan.io/tx/${txHash}`,
-    421614: `https://sepolia.arbiscan.io/tx/${txHash}`,
-    84532: `https://sepolia.basescan.org/tx/${txHash}`,
-    80002: `https://amoy.polygonscan.com/tx/${txHash}`,
-    11155420: `https://sepolia-optimism.etherscan.io/tx/${txHash}`,
-  };
-  return explorers[chainId] || `https://etherscan.io/tx/${txHash}`;
-};
+// Token-based payment system - no blockchain needed
 
 export default function SubscribeModal({
   isOpen,
@@ -49,16 +22,45 @@ export default function SubscribeModal({
   agentName,
   subscriptionPrice,
 }) {
-  const { isConnected } = useAccount();
-  const [txHash, setTxHash] = useState(null);
+  const [paymentId, setPaymentId] = useState(null);
   const [error, setError] = useState(null);
   const [step, setStep] = useState('select'); // 'select' | 'success' | 'error'
 
   const handleClose = () => {
     setStep('select');
     setError(null);
-    setTxHash(null);
+    setPaymentId(null);
     onClose();
+  };
+
+  const handleSubscription = async () => {
+    try {
+      setStep('processing');
+      
+      // Simulate API call to your payment processor
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          agentId,
+          subscriptionType: 'monthly',
+          tokenAmount: parseInt(SUBSCRIPTION_TOKENS),
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setPaymentId(data.paymentId);
+        setStep('success');
+      } else {
+        throw new Error('Subscription failed');
+      }
+    } catch (err) {
+      setError(err.message);
+      setStep('error');
+    }
   };
 
   if (!isOpen) return null;
@@ -82,7 +84,7 @@ export default function SubscribeModal({
               className="text-sm mt-1"
               style={{ color: 'rgba(251, 237, 224, 0.6)' }}
             >
-              {subscriptionPrice} per month
+              {subscriptionPrice || `${SUBSCRIPTION_TOKENS} tokens/month`}
             </p>
           </div>
           <button
@@ -105,29 +107,7 @@ export default function SubscribeModal({
         </div>
 
         <div className="p-6">
-          {!isConnected ? (
-            <div className="text-center py-8">
-              <AlertCircle
-                className="w-12 h-12 mx-auto mb-4"
-                style={{
-                  color: 'rgba(251, 237, 224, 0.6)',
-                }}
-              />
-              <h3
-                className="text-lg font-semibold mb-2"
-                style={{ color: '#FBede0' }}
-              >
-                Wallet Not Connected
-              </h3>
-              <p
-                style={{
-                  color: 'rgba(251, 237, 224, 0.6)',
-                }}
-              >
-                Please connect your wallet to subscribe to this agent
-              </p>
-            </div>
-          ) : step === 'select' ? (
+          {step === 'select' ? (
             <div>
               <h3
                 className="text-lg font-semibold mb-4"
@@ -139,9 +119,8 @@ export default function SubscribeModal({
                 className="text-sm mb-6"
                 style={{ color: 'rgba(251, 237, 224, 0.6)' }}
               >
-                Pay {SUBSCRIPTION_AMOUNT} USDC to subscribe to this
-                agent. The payment will be processed on{' '}
-                {getChainName(TARGET_CHAIN_ID)}.
+                Subscribe to get {SUBSCRIPTION_TOKENS} tokens monthly for querying this
+                agent. Tokens are deducted per query.
               </p>
 
               <div className="space-y-4 mb-6">
@@ -167,10 +146,10 @@ export default function SubscribeModal({
                         color: 'rgba(251, 237, 224, 0.7)',
                       }}
                     >
-                      Price
+                      Monthly Tokens
                     </span>
                     <span style={{ color: '#FBede0' }}>
-                      {SUBSCRIPTION_AMOUNT} USDC
+                      {SUBSCRIPTION_TOKENS} tokens
                     </span>
                   </div>
                   <div className="flex items-center justify-between mb-2">
@@ -179,10 +158,10 @@ export default function SubscribeModal({
                         color: 'rgba(251, 237, 224, 0.7)',
                       }}
                     >
-                      Destination
+                      Token Usage
                     </span>
                     <span style={{ color: '#FBede0' }}>
-                      {getChainName(TARGET_CHAIN_ID)}
+                      Per Query Deduction
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -191,7 +170,7 @@ export default function SubscribeModal({
                         color: 'rgba(251, 237, 224, 0.7)',
                       }}
                     >
-                      Recipient
+                      Renewal
                     </span>
                     <span
                       style={{
@@ -199,106 +178,51 @@ export default function SubscribeModal({
                         fontSize: '12px',
                       }}
                     >
-                      {AGENT_CONTRACT_ADDRESS.slice(0, 6)}...
-                      {AGENT_CONTRACT_ADDRESS.slice(-4)}
+                      Monthly Auto-Refill
                     </span>
                   </div>
                 </div>
               </div>
 
-              <BridgeAndExecuteSection>
-                <BridgeAndExecuteButton
-                  contractAddress={AGENT_CONTRACT_ADDRESS}
-                  contractAbi={[
-                    {
-                      inputs: [
-                        {
-                          internalType: 'string',
-                          name: 'agentId',
-                          type: 'string',
-                        },
-                        {
-                          internalType: 'string',
-                          name: 'subscriptionType',
-                          type: 'string',
-                        },
-                        {
-                          internalType: 'uint256',
-                          name: 'amountWei',
-                          type: 'uint256',
-                        },
-                      ],
-                      name: 'subscribe',
-                      outputs: [],
-                      stateMutability: 'payable',
-                      type: 'function',
-                    },
-                  ]}
-                  functionName="subscribe"
-                  buildFunctionParams={(
-                    _token,
-                    amount,
-                    _chainId,
-                    _userAddress
-                  ) => {
-                    const amountWei = parseEther(amount);
-                    return {
-                      functionParams: [
-                        agentId,
-                        'monthly',
-                        amountWei,
-                      ],
-                    };
-                  }}
-                  prefill={{
-                    toChainId: TARGET_CHAIN_ID,
-                    token: 'ETH',
-                    amount: SUBSCRIPTION_AMOUNT,
-                  }}
-                >
-                  {({ onClick, isLoading, disabled }) => (
-                    <button
-                      onClick={onClick}
-                      disabled={disabled || isLoading}
-                      className="w-full px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
-                      style={{
-                        backgroundColor: isLoading
-                          ? 'rgba(251, 237, 224, 0.3)'
-                          : '#FBede0',
-                        color: '#161823',
-                        cursor: disabled
-                          ? 'not-allowed'
-                          : 'pointer',
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!disabled && !isLoading) {
-                          e.currentTarget.style.backgroundColor =
-                            '#e8d4c5';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!disabled && !isLoading) {
-                          e.currentTarget.style.backgroundColor =
-                            '#FBede0';
-                        }
-                      }}
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          Subscribe & Pay{' '}
-                          {SUBSCRIPTION_AMOUNT} USDC
-                          <ArrowRight className="w-4 h-4" />
-                        </>
-                      )}
-                    </button>
-                  )}
-                </BridgeAndExecuteButton>
-              </BridgeAndExecuteSection>
+              <button
+                onClick={handleSubscription}
+                disabled={step === 'processing'}
+                className="w-full px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
+                style={{
+                  backgroundColor: step === 'processing'
+                    ? 'rgba(251, 237, 224, 0.3)'
+                    : '#FBede0',
+                  color: '#161823',
+                  cursor: step === 'processing'
+                    ? 'not-allowed'
+                    : 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                  if (step !== 'processing') {
+                    e.currentTarget.style.backgroundColor =
+                      '#e8d4c5';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (step !== 'processing') {
+                    e.currentTarget.style.backgroundColor =
+                      '#FBede0';
+                  }
+                }}
+              >
+                {step === 'processing' ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    Subscribe for{' '}
+                    {SUBSCRIPTION_TOKENS} Tokens/Month
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
             </div>
           ) : step === 'success' ? (
             <div className="text-center py-8">
@@ -318,28 +242,19 @@ export default function SubscribeModal({
                   color: 'rgba(251, 237, 224, 0.6)',
                 }}
               >
-                You are now subscribed to {agentName}
+                You now have {SUBSCRIPTION_TOKENS} tokens monthly for {agentName}
               </p>
-              {txHash && (
+              {paymentId && (
                 <p
                   className="text-sm"
                   style={{
                     color: 'rgba(251, 237, 224, 0.5)',
                   }}
                 >
-                  Transaction:{' '}
-                  <a
-                    href={getExplorerUrl(
-                      TARGET_CHAIN_ID,
-                      txHash
-                    )}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    {txHash.slice(0, 10)}...
-                    {txHash.slice(-8)}
-                  </a>
+                  Payment ID:{' '}
+                  <span className="font-mono">
+                    {paymentId}
+                  </span>
                 </p>
               )}
               <button

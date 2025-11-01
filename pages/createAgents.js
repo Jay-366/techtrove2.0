@@ -24,8 +24,8 @@ export default function CreateAgentPage() {
 
   // access / pricing
   const [selectedAccessOptions, setSelectedAccessOptions] = useState([]);
-  const [monthlyPrice, setMonthlyPrice] = useState("");
-  const [payPerUsePrice, setPayPerUsePrice] = useState("");
+  const [monthlyTokens, setMonthlyTokens] = useState("");
+  const [tokensPerQuery, setTokensPerQuery] = useState("");
   const [isPublic, setIsPublic] = useState(false);
 
   // UI state
@@ -114,20 +114,20 @@ export default function CreateAgentPage() {
       errors.push("Please select at least one access option.");
     }
 
-    // subscribers option requires monthlyPrice
+    // subscribers option requires monthlyTokens
     if (
       selectedAccessOptions.includes("subscribers") &&
-      !monthlyPrice.trim()
+      !monthlyTokens.trim()
     ) {
-      errors.push("Monthly price is required for Subscribers option.");
+      errors.push("Monthly tokens are required for Subscribers option.");
     }
 
-    // pay-per-use option requires payPerUsePrice
+    // pay-per-use option requires tokensPerQuery
     if (
       selectedAccessOptions.includes("payperuse") &&
-      !payPerUsePrice.trim()
+      !tokensPerQuery.trim()
     ) {
-      errors.push("Price per session is required for Pay-Per-Use option.");
+      errors.push("Tokens per query is required for Pay-Per-Use option.");
     }
 
     setValidationErrors(errors);
@@ -157,8 +157,8 @@ export default function CreateAgentPage() {
         "accessOptions",
         JSON.stringify(selectedAccessOptions)
       );
-      formData.append("monthlyPrice", monthlyPrice || "");
-      formData.append("payPerUsePrice", payPerUsePrice || "");
+      formData.append("monthlyTokens", monthlyTokens || "");
+      formData.append("tokensPerQuery", tokensPerQuery || "");
       formData.append("isPublic", isPublic ? "true" : "false");
 
       if (address) {
@@ -402,10 +402,10 @@ export default function CreateAgentPage() {
 
                   <div className="flex-1">
                     <h4 className="mb-1 font-semibold text-[#f8ede0]">
-                      Subscribers (monthly-based)
+                      Subscribers (monthly tokens)
                     </h4>
                     <p className="text-sm mb-3 text-[#5d606c]">
-                      Users pay a recurring monthly fee to access this agent.
+                      Users get monthly tokens to query this agent.
                     </p>
 
                     {selectedAccessOptions.includes("subscribers") && (
@@ -413,30 +413,29 @@ export default function CreateAgentPage() {
                         onClick={(e) => e.stopPropagation()}
                         className="space-y-4"
                       >
-                        {/* Monthly price */}
+                        {/* Monthly tokens */}
                         <div className="relative" style={{ width: "200px" }}>
                           <Input
                             type="text"
-                            value={monthlyPrice}
+                            value={monthlyTokens}
                             onChange={(e) => {
                               const value = e.target.value.replace(
-                                /[^0-9.]/g,
+                                /[^0-9]/g,
                                 ""
                               );
-                              setMonthlyPrice(value);
+                              setMonthlyTokens(value);
                             }}
                             className="h-11 bg-transparent border-[#5d606c] text-[#f8ede0] placeholder-transparent focus:border-[#f8ede0] hover:border-[#f8ede0]/60 peer w-full"
                           />
                           <Label className={`absolute left-4 transition-all duration-200 pointer-events-none ${
-                            monthlyPrice && monthlyPrice.trim() !== ''
+                            monthlyTokens && monthlyTokens.trim() !== ''
                               ? '-top-2 text-xs text-[#f8ede0] bg-[#1C1F2B] px-1'
                               : 'top-3 text-sm text-[#5d606c] peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#f8ede0] peer-focus:bg-[#1C1F2B] peer-focus:px-1'
                           }`}>
-                            Monthly Price (USD)
+                            Monthly Tokens
                           </Label>
                           <p className="mt-2 text-sm text-[#5d606c]">
-                            We’ll store this price in the database for
-                            subscription billing.
+                            Tokens users get monthly for queries (e.g., 10000).
                           </p>
                         </div>
                       </div>
@@ -483,36 +482,35 @@ export default function CreateAgentPage() {
 
                   <div className="flex-1">
                     <h4 className="mb-1 font-semibold text-[#f8ede0]">
-                      Pay-Per-Use (session-based)
+                      Pay-Per-Query (token-based)
                     </h4>
                     <p className="text-sm mb-3 text-[#5d606c]">
-                      Users pay a small one-time fee each time they invoke this
-                      agent.
+                      Users pay tokens each time they query this agent.
                     </p>
 
                     {selectedAccessOptions.includes("payperuse") && (
                       <div className="relative" onClick={(e) => e.stopPropagation()} style={{ width: "200px" }}>
                         <Input
                           type="text"
-                          value={payPerUsePrice}
+                          value={tokensPerQuery}
                           onChange={(e) => {
                             const value = e.target.value.replace(
-                              /[^0-9.]/g,
+                              /[^0-9]/g,
                               ""
                             );
-                            setPayPerUsePrice(value);
+                            setTokensPerQuery(value);
                           }}
                           className="h-11 bg-transparent border-[#5d606c] text-[#f8ede0] placeholder-transparent focus:border-[#f8ede0] hover:border-[#f8ede0]/60 peer w-full"
                         />
                         <Label className={`absolute left-4 transition-all duration-200 pointer-events-none ${
-                          payPerUsePrice && payPerUsePrice.trim() !== ''
+                          tokensPerQuery && tokensPerQuery.trim() !== ''
                             ? '-top-2 text-xs text-[#f8ede0] bg-[#1C1F2B] px-1'
                             : 'top-3 text-sm text-[#5d606c] peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#f8ede0] peer-focus:bg-[#1C1F2B] peer-focus:px-1'
                         }`}>
-                          Price Per Session (USD)
+                          Tokens Per Query
                         </Label>
                         <p className="mt-2 text-sm text-[#5d606c]">
-                          We'll store this price in the database.
+                          Tokens required per query (e.g., 100).
                         </p>
                       </div>
                     )}

@@ -28,7 +28,7 @@ export default function MyAgentsPage() {
   const [sortDirection, setSortDirection] = useState("asc");
 
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [priceRange, setPriceRange] = useState([0.001, 0.1]);
+  const [priceRange, setPriceRange] = useState([100, 2000]);
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [newlyCreatedAgent, setNewlyCreatedAgent] = useState(null);
@@ -53,7 +53,7 @@ export default function MyAgentsPage() {
         users: 1,
         revenue: "$0",
         status: "Active",
-        price: 0.019,
+        price: 900,
         experience: "1 year exp",
         workType: "Project work",
         expiry: "Active subscription",
@@ -107,7 +107,7 @@ export default function MyAgentsPage() {
       rating: 4.8,
       reviews: 21,
       users: 12500,
-      price: 0.019,
+      price: 1000,
       experience: "2 years exp",
       workType: "Project work",
       expiry: "Expires in 14 days",
@@ -125,7 +125,7 @@ export default function MyAgentsPage() {
       rating: 4.9,
       reviews: 18,
       users: 8300,
-      price: 0.005,
+      price: 500,
       experience: "3 years exp",
       workType: "Hourly work",
       expiry: "Expires in 7 days",
@@ -143,7 +143,7 @@ export default function MyAgentsPage() {
       rating: 4.7,
       reviews: 25,
       users: 15200,
-      price: 0.019,
+      price: 750,
       experience: "4 years exp",
       workType: "Project work",
       expiry: "Expires in 30 days",
@@ -167,7 +167,7 @@ export default function MyAgentsPage() {
       users: 340,
       revenue: "$1,240",
       status: "Active",
-      price: 0.025,
+      price: 800,
       experience: "1 year exp",
       workType: "Project work",
       expiry: "Active subscription",
@@ -187,7 +187,7 @@ export default function MyAgentsPage() {
       users: 520,
       revenue: "$890",
       status: "Active",
-      price: 0.015,
+      price: 600,
       experience: "2 years exp",
       workType: "Subscription",
       expiry: "Active subscription",
@@ -482,8 +482,8 @@ export default function MyAgentsPage() {
                 <SlidersHorizontal className="w-4 h-4" />
                 <span>Filter</span>
                 {(selectedCategories.length > 0 ||
-                  priceRange[0] > 0.001 ||
-                  priceRange[1] < 0.1) && (
+                  priceRange[0] > 100 ||
+                  priceRange[1] < 2000) && (
                   <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[#f8ede0] text-[#161823] text-[10px] font-semibold">
                     {selectedCategories.length}
                   </span>
@@ -565,9 +565,9 @@ export default function MyAgentsPage() {
                     </h4>
                     <div className="space-y-3">
                       <Slider
-                        min={0.001}
-                        max={0.1}
-                        step={0.001}
+                        min={100}
+                        max={2000}
+                        step={50}
                         value={priceRange}
                         onValueChange={(value) =>
                           setPriceRange(value)
@@ -576,10 +576,10 @@ export default function MyAgentsPage() {
                       />
                       <div className="flex items-center justify-between text-xs text-[#f8ede0]/80">
                         <span>
-                          ETH {priceRange[0].toFixed(3)}
+                          {priceRange[0]} tokens
                         </span>
                         <span>
-                          ETH {priceRange[1].toFixed(3)}
+                          {priceRange[1]} tokens
                         </span>
                       </div>
                     </div>
@@ -587,16 +587,16 @@ export default function MyAgentsPage() {
 
                   {/* clear filters */}
                   {(selectedCategories.length > 0 ||
-                    priceRange[0] > 0.001 ||
-                    priceRange[1] < 0.1) && (
+                    priceRange[0] > 100 ||
+                    priceRange[1] < 2000) && (
                     <>
                       <div className="my-2 border-t border-[#5d606c]" />
                       <div className="px-4 py-2">
                         <button
-                          onClick={() => {
-                            setSelectedCategories([]);
-                            setPriceRange([0.001, 0.1]);
-                          }}
+                        onClick={() => {
+                          setSelectedCategories([]);
+                          setPriceRange([100, 2000]);
+                        }}
                           className="w-full px-3 py-2 rounded-md border border-[#5d606c] text-sm text-[#f8ede0] hover:bg-[#5d606c] transition-all"
                         >
                           Clear Filters
@@ -642,7 +642,7 @@ export default function MyAgentsPage() {
                   category={agent.category}
                   description={agent.description}
                   price={agent.price}
-                  pricePeriod="/month"
+                  pricePeriod="tokens/query"
                   rating={agent.rating}
                   users={agent.users}
                   trending={agent.trending}
@@ -666,7 +666,7 @@ export default function MyAgentsPage() {
                   onClick={() => {
                     setSearchQuery("");
                     setSelectedCategories([]);
-                    setPriceRange([0.001, 0.1]);
+                    setPriceRange([100, 2000]);
                   }}
                   className="mt-4 px-6 py-2 rounded-md border border-[#5d606c] text-sm text-[#f8ede0]/60 hover:bg-[#5d606c]/20 hover:text-[#f8ede0] transition-all"
                 >
@@ -729,7 +729,7 @@ export default function MyAgentsPage() {
                   category={agent.category}
                   description={agent.description}
                   price={agent.price}
-                  pricePeriod="/month"
+                  pricePeriod="tokens/query"
                   rating={agent.rating}
                   users={agent.users}
                   revenue={agent.revenue}
@@ -758,7 +758,7 @@ export default function MyAgentsPage() {
                     onClick={() => {
                       setSearchQuery("");
                       setSelectedCategories([]);
-                      setPriceRange([0.001, 0.1]);
+                      setPriceRange([100, 2000]);
                     }}
                     className="mt-4 px-6 py-2 rounded-md border border-[#5d606c] text-sm text-[#f8ede0]/60 hover:bg-[#5d606c]/20 hover:text-[#f8ede0] transition-all"
                   >

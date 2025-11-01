@@ -28,7 +28,6 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const navItems = [
-    { href: '/', label: 'Home' },
     { href: '/agents', label: 'My Agents' },
     { href: '/marketplace', label: 'Marketplace' },
     { href: '/createAgents', label: 'Create Agent' },

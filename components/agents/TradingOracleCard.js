@@ -107,8 +107,8 @@ export const TradingOracleCard = React.forwardRef(function TradingOracleCard(
     title = 'Trading Oracle',
     category = 'Trading',
     description = 'Advanced market analysis and trading strategies powered by AI',
-    price = 19,
-    pricePeriod = '/month',
+    price = 1000,
+    pricePeriod = 'tokens/query',
     rating = 4.8,
     users = 12500,
     trending = false,
@@ -210,18 +210,8 @@ export const TradingOracleCard = React.forwardRef(function TradingOracleCard(
           <div className="flex items-center justify-between gap-2">
             {/* Price */}
             <div className="flex items-center gap-1">
-              <Image
-                src="/eth.svg"
-                alt="ETH"
-                width={16}
-                height={16}
-                className="opacity-80"
-              />
               <span className="text-base font-bold text-[#f8ede0]">
-                ETH
-              </span>
-              <span className="text-base font-bold text-[#f8ede0]">
-              {price}
+                {price}
               </span>
               <span className="text-[#f8ede0]/70 text-[9px] self-end pb-0.5">
                 {pricePeriod}
