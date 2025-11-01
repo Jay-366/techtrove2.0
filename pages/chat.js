@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { Bot, Search, Plus, Settings, Info, Calendar, Sparkles, MessageCircle, ChevronDown } from 'lucide-react';
+import { Bot, Search, Plus, Settings, Info, Calendar, Sparkles, MessageCircle, ChevronDown, Mail, FileText, CreditCard, Check, Clock, AlertCircle } from 'lucide-react';
 import { useAIBoxChat } from '../lib/useAIBoxChat';
 import SplitText from '../components/SplitText';
 import { PromptInputBox } from '../components/ai-prompt-box';
@@ -523,21 +523,75 @@ export default function ChatPage() {
                     
                     {/* Confirmation buttons */}
                     {msg.requiresConfirmation && msg.detectedActions && (
-                      <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(80, 96, 108, 0.5)' }}>
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          {msg.detectedActions.map((action, idx) => (
-                            <span
-                              key={idx}
-                              className="px-2 py-1 rounded text-xs"
-                              style={{
-                                backgroundColor: 'rgba(251, 237, 224, 0.1)',
-                                color: 'rgba(251, 237, 224, 0.8)',
-                                border: '1px solid rgba(251, 237, 224, 0.2)'
-                              }}
-                            >
-                              {action.description}
-                            </span>
-                          ))}
+                      <div className="mt-4 pt-4 border-t" style={{ borderColor: 'rgba(80, 96, 108, 0.5)' }}>
+                        {/* Execution Plan Header */}
+                        <div className="mb-4">
+                          <h4 className="text-sm font-semibold mb-1" style={{ color: '#FBede0' }}>
+                            Execution Plan
+                          </h4>
+                          <p className="text-xs" style={{ color: 'rgba(251, 237, 224, 0.6)' }}>
+                            A preview of AI agents being coordinated to complete your request.
+                          </p>
+                        </div>
+
+                        {/* Agent List */}
+                        <div className="space-y-3 mb-4">
+                          {msg.detectedActions.map((action, idx) => {
+                            console.log(`[Chat] ==== ACTION ${idx} DEBUG ====`);
+                            console.log('[Chat] Full action object:', JSON.stringify(action, null, 2));
+                            console.log(`[Chat] action.icon value:`, action.icon);
+                            console.log(`[Chat] action.icon type:`, typeof action.icon);
+                            
+                            // Render icon directly based on icon name
+                            const renderIcon = (iconName) => {
+                              const iconProps = {
+                                className: "w-4 h-4",
+                                style: { color: 'rgba(251, 237, 224, 0.8)' }
+                              };
+                              
+                              console.log(`[Chat] Switch checking icon: "${iconName}" (type: ${typeof iconName})`);
+                              
+                              switch(iconName) {
+                                case 'Calendar':
+                                  return <Calendar {...iconProps} />;
+                                case 'Mail':
+                                  return <Mail {...iconProps} />;
+                                case 'FileText':
+                                  return <FileText {...iconProps} />;
+                                case 'CreditCard':
+                                  return <CreditCard {...iconProps} />;
+                                case 'MessageCircle':
+                                  return <MessageCircle {...iconProps} />;
+                                // default:
+                                //   console.warn(`[Chat] ⚠️ USING DEFAULT ICON! iconName was: "${iconName}"`);
+                                //   return <Settings {...iconProps} />;
+                              }
+                            };
+
+                            return (
+                              <div
+                                key={idx}
+                                className="p-3 rounded-lg border transition-all duration-200"
+                                style={{
+                                  backgroundColor: 'rgba(251, 237, 224, 0.05)',
+                                  border: '1px solid rgba(251, 237, 224, 0.2)'
+                                }}
+                              >
+                                {/* Agent Header */}
+                                <div className="flex items-center gap-2 mb-2">
+                                  {renderIcon(action.icon)}
+                                  <span className="text-sm font-medium" style={{ color: '#FBede0' }}>
+                                    {action.agent || action.description}
+                                  </span>
+                                </div>
+                                
+                                {/* Agent Description */}
+                                <p className="text-xs leading-relaxed" style={{ color: 'rgba(251, 237, 224, 0.7)' }}>
+                                  {action.description || `Executes ${action.action || action.type} functionality`}
+                                </p>
+                              </div>
+                            );
+                          })}
                         </div>
                         <button
                           onClick={() => {
@@ -571,30 +625,198 @@ export default function ChatPage() {
                       </div>
                     )}
                     
-                    {/* Status updates during execution */}
-                    {msg.isStatusTracking && msg.metadata?.statusUpdates && msg.metadata.statusUpdates.length > 0 && (
-                      <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(80, 96, 108, 0.5)' }}>
-                        {msg.metadata.statusUpdates.map((update, idx) => (
-                          <div
-                            key={idx}
-                            className="text-xs mb-1 flex items-center gap-2"
-                            style={{
-                              color: update.status === 'success' 
-                                ? 'rgba(34, 197, 94, 0.8)'
-                                : update.status === 'error'
-                                ? 'rgba(220, 38, 38, 0.8)'
-                                : 'rgba(251, 237, 224, 0.6)'
-                            }}
-                          >
-                            <span>
-                              {update.status === 'success' ? '✅' : update.status === 'error' ? '❌' : '⏳'}
-                            </span>
-                            <span>{update.message}</span>
-                          </div>
-                        ))}
+                    {/* Agent Execution Progress - Animated Progress Bars */}
+                    {msg.isStatusTracking && (
+                      <div className="mt-4 pt-4 border-t" style={{ borderColor: 'rgba(80, 96, 108, 0.5)' }}>
+                        {console.log('[Progress] Status tracking message:', { 
+                          isStatusTracking: msg.isStatusTracking, 
+                          hasMetadata: !!msg.metadata,
+                          statusUpdates: msg.metadata?.statusUpdates,
+                          statusUpdatesLength: msg.metadata?.statusUpdates?.length 
+                        })}
+                        <div className="mb-3">
+                          <h4 className="text-sm font-semibold mb-1" style={{ color: '#FBede0' }}>
+                             Agent Execution Progress
+                          </h4>
+                          <p className="text-xs" style={{ color: 'rgba(251, 237, 224, 0.6)' }}>
+                            Watch as multiple AI agents coordinate to complete your request
+                          </p>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          {msg.metadata?.statusUpdates && msg.metadata.statusUpdates.length > 0 ? (
+                            // Group status updates by agent to show smooth transitions
+                            (() => {
+                              const agentGroups = {};
+                              
+                              // Group updates by agent type
+                              msg.metadata.statusUpdates.forEach((update, idx) => {
+                                const lowerMsg = update.message.toLowerCase();
+                                let agentKey = 'general';
+                                
+                                if (lowerMsg.includes('calendar') || lowerMsg.includes('event')) {
+                                  agentKey = 'calendar';
+                                } else if (lowerMsg.includes('email') || lowerMsg.includes('mail')) {
+                                  agentKey = 'email';
+                                } else if (lowerMsg.includes('invoice')) {
+                                  agentKey = 'invoice';
+                                } else if (lowerMsg.includes('payment')) {
+                                  agentKey = 'payment';
+                                }
+                                
+                                if (!agentGroups[agentKey]) {
+                                  agentGroups[agentKey] = [];
+                                }
+                                agentGroups[agentKey].push({ ...update, originalIndex: idx });
+                              });
+                              
+                              return Object.entries(agentGroups).map(([agentKey, updates], agentIndex) => {
+                                // Get the latest update for this agent
+                                const latestUpdate = updates[updates.length - 1];
+                                const isSuccess = latestUpdate.status === 'success';
+                                const isError = latestUpdate.status === 'error';
+                                const isProgress = latestUpdate.status === 'progress';
+                                
+                                // Calculate animation delay based on agent order (sequential)
+                                const animationDelay = agentIndex * 2.5; // Each agent waits 2.5s for previous to finish
+                                
+                                // Map agent key to icon and info
+                                const getAgentInfo = (key) => {
+                                  switch(key) {
+                                    case 'calendar':
+                                      return { Icon: Calendar, name: 'Event Planning Agent', color: 'oklch(0.708 0 0)' };
+                                    case 'email':
+                                      return { Icon: Mail, name: 'Email Agent', color: 'oklch(0.708 0 0)' };
+                                    case 'invoice':
+                                      return { Icon: FileText, name: 'Invoice Agent', color: 'oklch(0.708 0 0)' };
+                                    case 'payment':
+                                      return { Icon: CreditCard, name: 'Payment Agent', color: 'oklch(0.708 0 0)' };
+                                    default:
+                                      return { Icon: MessageCircle, name: 'AI Agent', color: 'oklch(0.708 0 0)' };
+                                  }
+                                };
+                                
+                                const agentInfo = getAgentInfo(agentKey);
+                                const AgentIcon = agentInfo.Icon;
+                                
+                                return (
+                                  <div
+                                    key={agentKey}
+                                    className="p-3 rounded-lg transition-all duration-500 ease-in-out"
+                                    style={{
+                                      backgroundColor: 'rgba(251, 237, 224, 0.05)',
+                                      border: '1px solid rgba(251, 237, 224, 0.15)',
+                                      animation: `fadeInAgent 0.5s ease-out forwards ${animationDelay * 0.3}s`,
+                                      opacity: 0
+                                    }}
+                                  >
+                                    {/* Agent Header */}
+                                    <div className="flex items-center justify-between mb-2">
+                                      <div className="flex items-center gap-2">
+                                        <AgentIcon 
+                                          className="w-4 h-4 transition-all duration-300" 
+                                          style={{ color: agentInfo.color }}
+                                        />
+                                        <span className="text-xs font-medium" style={{ color: '#FBede0' }}>
+                                          {agentInfo.name}
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center transition-all duration-300">
+                                        {isSuccess ? (
+                                          <Check className="w-4 h-4 animate-in fade-in duration-300" style={{ color: '#10B981' }} />
+                                        ) : isError ? (
+                                          <AlertCircle className="w-4 h-4 animate-in fade-in duration-300" style={{ color: '#EF4444' }} />
+                                        ) : (
+                                          <Clock className="w-4 h-4 animate-pulse" style={{ color: 'oklch(0.708 0 0)' }} />
+                                        )}
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Status Message with smooth transition */}
+                                    <p 
+                                      className="text-xs mb-2 transition-all duration-500 ease-in-out" 
+                                      key={latestUpdate.message} // Key triggers re-render for animation
+                                      style={{ 
+                                        color: isSuccess 
+                                          ? 'rgba(34, 197, 94, 0.9)'
+                                          : isError
+                                          ? 'rgba(220, 38, 38, 0.9)'
+                                          : 'rgba(251, 237, 224, 0.7)'
+                                      }}
+                                    >
+                                      {latestUpdate.message}
+                                    </p>
+                                    
+                                    {/* Animated Progress Bar with Sequential Timing */}
+                                    <div 
+                                      className="h-1.5 rounded-full overflow-hidden"
+                                      style={{ backgroundColor: 'rgba(251, 237, 224, 0.1)' }}
+                                    >
+                                      <div
+                                        className="h-full rounded-full progress-fill"
+                                        style={{
+                                          width: isSuccess ? '100%' : isProgress ? '60%' : '100%',
+                                          backgroundColor: isSuccess 
+                                            ? agentInfo.color
+                                            : isError 
+                                            ? '#EF4444'
+                                            : agentInfo.color,
+                                          animation: isProgress 
+                                            ? `progressFill 2s ease-out forwards ${animationDelay}s, pulse 1.5s ease-in-out infinite ${animationDelay + 2}s` 
+                                            : `progressFill 2s ease-out forwards ${animationDelay}s`,
+                                          transformOrigin: 'left center',
+                                          opacity: isSuccess ? '1' : isProgress ? '0.7' : '1'
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              });
+                            })()
+                          ) : (
+                            // Fallback: Show simple progress when no status updates yet
+                            <div className="p-3 rounded-lg" style={{
+                              backgroundColor: 'rgba(251, 237, 224, 0.05)',
+                              border: '1px solid rgba(251, 237, 224, 0.15)'
+                            }}>
+                              <div className="flex items-center gap-2 mb-2">
+                                <MessageCircle className="w-4 h-4" style={{ color: 'oklch(0.708 0 0)' }} />
+                                <span className="text-xs font-medium" style={{ color: '#FBede0' }}>
+                                  AI Agent Coordinator
+                                </span>
+                                <Clock className="w-4 h-4" style={{ color: 'oklch(0.708 0 0)' }} />
+                              </div>
+                              <p className="text-xs mb-2" style={{ color: 'rgba(251, 237, 224, 0.7)' }}>
+                                Initializing agent coordination...
+                              </p>
+                              <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(251, 237, 224, 0.1)' }}>
+                                <div className="h-full rounded-full progress-fill" style={{
+                                  width: '30%',
+                                  backgroundColor: 'oklch(0.708 0 0)',
+                                  animation: 'progressFill 1.5s ease-out forwards, pulse 1.5s ease-in-out infinite 1.5s'
+                                }} />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        
                         {pending && (
-                          <div className="text-xs mt-2" style={{ color: 'rgba(251, 237, 224, 0.5)' }}>
-                            Processing...
+                          <div className="mt-3 flex items-center gap-2 text-xs" style={{ color: 'rgba(251, 237, 224, 0.6)' }}>
+                            <div className="flex gap-1">
+                              <div className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ 
+                                backgroundColor: 'rgba(251, 237, 224, 0.6)',
+                                animationDelay: '0ms'
+                              }} />
+                              <div className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ 
+                                backgroundColor: 'rgba(251, 237, 224, 0.6)',
+                                animationDelay: '150ms'
+                              }} />
+                              <div className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ 
+                                backgroundColor: 'rgba(251, 237, 224, 0.6)',
+                                animationDelay: '300ms'
+                              }} />
+                            </div>
+                            <span>Coordinating agents...</span>
                           </div>
                         )}
                       </div>
@@ -623,7 +845,7 @@ export default function ChatPage() {
                     {msg.metadata?.calendar?.status === 'CREATED' && (
                       <div className="mt-2 pt-2 border-t border-gray-600">
                         <div className="text-xs text-green-400">
-                          ✅ Calendar event created: {msg.metadata.calendar.eventSummary}
+                           Calendar event created: {msg.metadata.calendar.eventSummary}
                         </div>
                         {msg.metadata.calendar.calendarLink && (
                           <a
@@ -901,6 +1123,81 @@ export default function ChatPage() {
           to {
             transform: translateX(0);
             opacity: 1;
+          }
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 0.7;
+            transform: scaleX(1);
+          }
+          50% {
+            opacity: 1;
+            transform: scaleX(1.02);
+          }
+        }
+
+        @keyframes progressFill {
+          from {
+            transform: scaleX(0);
+          }
+          to {
+            transform: scaleX(1);
+          }
+        }
+
+        @keyframes fadeInAgent {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .progress-fill {
+          transform-origin: left center;
+          transform: scaleX(0);
+        }
+
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: scale(0.8);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        @keyframes animate-in {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-in {
+          animation: animate-in 0.3s ease-out;
+        }
+
+        .fade-in {
+          animation: fade-in 0.3s ease-out;
+        }
+
+        @keyframes shimmer {
+          0% {
+            background-position: -200% 0;
+          }
+          100% {
+            background-position: 200% 0;
           }
         }
 

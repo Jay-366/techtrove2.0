@@ -48,25 +48,56 @@ export class AgentCoordinator {
   async detectActions(userPrompt) {
     const actionTypes = this.detectRequestTypes(userPrompt);
     
-    const actionDescriptions = {
-      calendar: 'Schedule calendar event',
-      email: 'Send email',
-      invoice: 'Create invoice',
-      payment: 'Generate payment link',
-      general: 'General response'
+    const agentDescriptions = {
+      calendar: {
+        agent: 'Event Planning Agent',
+        action: 'Schedule calendar event',
+        description: 'Creates and schedules events in Google Calendar. Handles date/time parsing, attendee management, and calendar integration.',
+        icon: 'Calendar'
+      },
+      email: {
+        agent: 'Email Communication Agent',
+        action: 'Send email',
+        description: 'Sends professional emails via Gmail API. Supports HTML templates, attachments, and automated email composition.',
+        icon: 'Mail'
+      },
+      invoice: {
+        agent: 'Invoice Generation Agent',
+        action: 'Create invoice',
+        description: 'Generates professional Excel invoices with Malaysian Ringgit (MYR) currency support and automated invoice numbering.',
+        icon: 'FileText'
+      },
+      payment: {
+        agent: 'Payment Processing Agent',
+        action: 'Generate payment link',
+        description: 'Creates secure Stripe payment links with MYR currency support, FPX banking integration, and beautiful HTML payment buttons.',
+        icon: 'CreditCard'
+      },
+      general: {
+        agent: 'GPT Response Agent',
+        action: 'General response',
+        description: 'Provides intelligent text responses using OpenAI GPT-4 for natural language understanding and generation.',
+        icon: 'MessageCircle'
+      }
     };
     
     const detectedActions = actionTypes
       .filter(type => type !== 'general')
       .map(type => ({
         type,
-        description: actionDescriptions[type] || type
+        agent: agentDescriptions[type]?.agent || `${type} Agent`,
+        action: agentDescriptions[type]?.action || type,
+        description: agentDescriptions[type]?.description || `${type} Agent will handle this task`,
+        icon: agentDescriptions[type]?.icon || 'Settings'
       }));
+
+    console.log('[AgentCoordinator] Detected actions with icons:', detectedActions.map(a => ({ agent: a.agent, icon: a.icon })));
     
     return {
       hasActions: detectedActions.length > 0,
       actions: detectedActions,
-      actionTypes: actionTypes
+      actionTypes: actionTypes,
+      agentSummary: detectedActions.map(action => action.agent).join(', ')
     };
   }
 

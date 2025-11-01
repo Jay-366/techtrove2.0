@@ -17,10 +17,13 @@ export async function handleUserRequest(message, email, confirmExecute = false) 
       
       // If actions detected, return confirmation request
       if (detection.hasActions) {
+        const agentList = detection.actions.map(a => a.agent).join(' and ');
+        const actionList = detection.actions.map(a => a.action).join(', ');
+        
         return {
           status: 'confirmation_required',
           detectedActions: detection.actions,
-          message: `I'll help you with: ${detection.actions.map(a => a.description).join(', ')}. Would you like me to proceed?`,
+          message: `${agentList} will be called to execute: ${actionList}. Would you like me to proceed?`,
           originalMessage: message
         };
       }
