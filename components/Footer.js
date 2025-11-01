@@ -125,7 +125,7 @@ export default function Footer() {
           
           {/* Credits */}
           <div className="text-right text-sm text-white/60 leading-relaxed">
-            <p>Development by <span className="font-medium text-white">Peonut Potato Team</span></p>
+            <p>Development by <span className="font-medium text-white">Peanut Potato Team</span></p>
           </div>
         </div>
       </div>
