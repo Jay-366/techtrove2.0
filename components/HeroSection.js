@@ -21,17 +21,48 @@ export default function HeroSection() {
   const [isMounted, setIsMounted] = useState(false);
   const [splineLoaded, setSplineLoaded] = useState(false);
   const [splineError, setSplineError] = useState(false);
+  const [webglSupported, setWebglSupported] = useState(true);
   const splineRef = useRef(null);
   
   // Your Spline scene URL
   const sceneUrl = "https://prod.spline.design/JyEBHpF6tGRGi8LZ/scene.splinecode";
 
+  // Check WebGL support
+  const checkWebGLSupport = () => {
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      return !!gl;
+    } catch (e) {
+      return false;
+    }
+  };
+
   useEffect(() => {
     setIsMounted(true);
     
+    // Check WebGL support
+    const hasWebGL = checkWebGLSupport();
+    setWebglSupported(hasWebGL);
+    
+    if (!hasWebGL) {
+      console.warn('WebGL not supported, falling back to static background');
+      setSplineError(true);
+    }
+    
     // Add some debugging
-    console.log('HeroSection mounted, Spline scene URL:', sceneUrl);
-  }, []);
+    console.log('HeroSection mounted, WebGL supported:', hasWebGL, 'Spline scene URL:', sceneUrl);
+
+    // Set a timeout to fallback if Spline takes too long to load
+    const timeout = setTimeout(() => {
+      if (!splineLoaded && !splineError && hasWebGL) {
+        console.warn('Spline loading timeout, falling back to static background');
+        setSplineError(true);
+      }
+    }, 15000); // 15 second timeout
+
+    return () => clearTimeout(timeout);
+  }, [splineLoaded, splineError]);
 
   const onSplineLoad = (spline) => {
     console.log('Spline loaded successfully', spline);
@@ -39,9 +70,13 @@ export default function HeroSection() {
     setSplineError(false);
     
     // Try to access the scene and check for animations
-    if (spline && spline.getScene) {
-      const scene = spline.getScene();
-      console.log('Spline scene:', scene);
+    try {
+      if (spline && spline.getScene) {
+        const scene = spline.getScene();
+        console.log('Spline scene:', scene);
+      }
+    } catch (err) {
+      console.warn('Spline scene access error:', err);
     }
   };
 
@@ -49,6 +84,11 @@ export default function HeroSection() {
     console.error('Spline loading error:', error);
     setSplineError(true);
     setSplineLoaded(false);
+    
+    // If it's a WebGL error, mark WebGL as not supported
+    if (error && error.message && error.message.includes('WebGL')) {
+      setWebglSupported(false);
+    }
   };
 
   return (
@@ -56,25 +96,53 @@ export default function HeroSection() {
       className="hero-section relative overflow-hidden min-h-screen"
       style={{ backgroundColor: '#000000' }}
     >
-      {/* Spline 3D Background */}
-      <div className="absolute inset-0 z-0">
-        {isMounted && (
-          <Spline
-            ref={splineRef}
-            scene={sceneUrl}
-            onLoad={onSplineLoad}
-            onError={onSplineError}
+      {/* Fallback Background for when WebGL fails */}
+      {(!webglSupported || splineError) && (
+        <div className="absolute inset-0 z-0">
+          <div 
+            className="w-full h-full"
             style={{
-              width: '100%',
-              height: '100%',
-              background: 'transparent',
-              pointerEvents: 'auto',
+              background: 'radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 35%, #0f0f23 100%)',
+              backgroundSize: '100% 100%',
             }}
-            renderOnDemand={false}
-            allowFullScreen
-          />
-        )}
-      </div>
+          >
+            {/* Animated particles as fallback */}
+            <div className="absolute inset-0 overflow-hidden">
+              {[...Array(50)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-1 h-1 bg-blue-400 rounded-full animate-pulse"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                    animationDelay: `${Math.random() * 2}s`,
+                    animationDuration: `${2 + Math.random() * 3}s`,
+                    opacity: 0.3 + Math.random() * 0.7,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Spline 3D Background - only if WebGL is supported */}
+      {webglSupported && !splineError && (
+        <div className="absolute inset-0 z-0">
+          {isMounted && (
+            <Spline
+              scene={sceneUrl}
+              onLoad={onSplineLoad}
+              onError={onSplineError}
+              style={{
+                width: '100%',
+                height: '100%',
+                background: 'transparent',
+              }}
+            />
+          )}
+        </div>
+      )}
 
       {/* Loading State */}
       {!splineLoaded && !splineError && (
@@ -91,21 +159,35 @@ export default function HeroSection() {
         </div>
       )}
 
-      {/* Error State */}
-      {splineError && (
+      {/* Error State - only show if WebGL is supported but Spline still failed */}
+      {webglSupported && splineError && (
         <div className="absolute inset-0 z-10 flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-white font-medium">Failed to load 3D scene</p>
+          <div className="text-center max-w-md mx-auto p-6">
+            <p className="text-white font-medium mb-2">3D Scene Loading Issue</p>
+            <p className="text-gray-300 text-sm mb-4">
+              The 3D background failed to load. You're now seeing a fallback design.
+            </p>
             <button 
-              onClick={() => window.location.reload()} 
-              className="mt-4 px-4 py-2 text-white rounded"
+              onClick={() => {
+                setSplineError(false);
+                setSplineLoaded(false);
+                window.location.reload();
+              }} 
+              className="px-4 py-2 text-white rounded transition-opacity hover:opacity-80"
               style={{ 
-                background: 'linear-gradient(45deg, oklch(97.1% 0.014 343.198), oklch(98.4% 0.019 200.873))',
+                background: 'linear-gradient(45deg, #3b82f6, #1d4ed8)',
               }}
             >
-              Retry
+              Try Again
             </button>
           </div>
+        </div>
+      )}
+
+      {/* WebGL Not Supported Message */}
+      {!webglSupported && (
+        <div className="absolute top-4 right-4 z-10 bg-yellow-600 text-white px-3 py-1 rounded text-sm">
+          WebGL not available - using fallback design
         </div>
       )}
       
