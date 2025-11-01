@@ -55,10 +55,9 @@ export default function Navbar() {
                        rounded-full
                        border border-[rgba(255,255,255,0.2)]
                        w-[calc(100%-2rem)] sm:w-auto
-                       transition-[border-radius] duration-300 ease-in-out shadow-lg`}
+                       transition-[border-radius] duration-300 ease-in-out`}
                        style={{ 
-                         background: 'rgba(0, 0, 0, 0.8)',
-                         boxShadow: '0 8px 32px oklch(97.1% 0.014 343.198 / 0.3)'
+                         background: 'rgba(0, 0, 0, 0.8)'
                        }}>
 
       <div className="flex items-center justify-between w-full gap-x-3 sm:gap-x-4">
