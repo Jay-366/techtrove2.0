@@ -1,8 +1,15 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import Link from 'next/link';
 import CardFlip from './kokonutui/card-flip';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+// Register ScrollTrigger plugin
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 // SVG Icon Components
 const ZapIcon = ({ className, style }) => (
@@ -67,6 +74,50 @@ const WalletIcon = ({ className, style }) => (
 
 export default function FeaturesSection() {
   const ref = useRef(null);
+  const animatedHeadingRef = useRef(null);
+
+  useEffect(() => {
+    if (animatedHeadingRef.current) {
+      const animatedText = animatedHeadingRef.current;
+
+      // Split text into spans for individual letter animation and preserve spaces
+      animatedText.innerHTML = animatedText.textContent
+        .split("")
+        .map((char) =>
+          char === " " ? `<span class="d-inline-flex">&nbsp;</span>` : `<span class="d-inline-flex">${char}</span>`
+        )
+        .join("");
+
+      // Select all spans for animation
+      const letters = animatedText.querySelectorAll("span");
+
+      // Apply GSAP looping animation
+      gsap.fromTo(
+        letters,
+        {
+          scale: 1.5, // Start larger
+          opacity: 0, // Initial opacity
+          color: "oklch(89.9% 0.061 343.231)", // Start with IntelliBox gradient start color
+        },
+        {
+          scale: 1, // Shrink to normal size
+          opacity: 1, // Keep fully visible
+          color: "#fff", // Change to white
+          stagger: 0.08, // Animate each letter one by one
+          ease: "power2.out", // Smooth easing
+          duration: 1.2, // Total duration of animation
+          repeat: -1, // Infinite loop
+          repeatDelay: 2, // 2 second pause between loops
+          yoyo: false, // Don't reverse the animation
+        }
+      );
+    }
+
+    // Cleanup function
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, []);
 
 
 
@@ -125,8 +176,6 @@ export default function FeaturesSection() {
       />
 
       <div className="max-w-7xl mx-auto relative z-10">
-
-
         {/* Features Section */}
         <div className="text-center mb-16">
           <h2 
@@ -138,13 +187,33 @@ export default function FeaturesSection() {
               backgroundClip: 'text'
             }}
           >
-            Why Choose IntelliBox?
+            Why Choose <span 
+              style={{ 
+                background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}
+            >
+              IntelliBox
+            </span>?
           </h2>
           <p 
             className="text-xl max-w-3xl mx-auto"
             style={{ color: 'rgba(255, 255, 255, 0.8)' }}
           >
-            Experience the future of AI with our comprehensive multi-agent orchestration platform
+            <span 
+              style={{ 
+                background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}
+            >
+              IntelliBox
+            </span> unites multiple AI agents into one smart system, automating complex workflows with precision.
+            It seamlessly coordinates tasks across agents—delivering faster, smarter, 
+            and more autonomous results for the future of AI.
           </p>
         </div>
 
