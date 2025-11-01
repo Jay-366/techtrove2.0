@@ -402,7 +402,7 @@ export default function ChatPage() {
             alignItems: 'center',
           }}
         >
-          <div className="max-w-4xl mx-auto space-y-4 w-full px-2 md:px-0" style={{ flex: messages.length === 0 ? 'none' : 1, display: 'flex', flexDirection: 'column', justifyContent: messages.length === 0 ? 'center' : 'flex-start' }}>
+          <div className="max-w-4xl mx-auto space-y-2 w-full px-2 md:px-0" style={{ flex: messages.length === 0 ? 'none' : 1, display: 'flex', flexDirection: 'column', justifyContent: messages.length === 0 ? 'center' : 'flex-start' }}>
             {/* Welcome Message and Input - Only shown when no messages */}
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center" style={{ 
@@ -500,7 +500,8 @@ export default function ChatPage() {
                   msg.role === 'user' ? 'justify-end' : 'justify-start'
                 }`}
                 style={{
-                  marginTop: index === 0 ? '5px' : '0',
+                  marginTop: index === 0 ? '5px' : '8px',
+                  marginBottom: '0',
                 }}
               >
                 <div className="flex flex-col w-full max-w-[90%] md:max-w-[70%]">
@@ -515,9 +516,30 @@ export default function ChatPage() {
                       color: msg.isError ? '#FBede0' : '#FBede0',
                       fontSize: '14px',
                       lineHeight: '1.6',
+                      whiteSpace: 'pre-wrap',
                     }}
                   >
-                    {msg.content}
+                    {msg.content.trim()}
+                    
+                    {/* Show backend logs - visible in chat for transparency */}
+                    {msg.metadata?.logs && msg.metadata.logs.length > 0 && (
+                      <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(80, 96, 108, 0.5)' }}>
+                        <div className="text-xs mb-1 font-mono" style={{ color: 'rgba(251, 237, 224, 0.4)' }}>Backend Processing:</div>
+                        {msg.metadata.logs.slice(-5).map((log, idx) => (
+                          <div 
+                            key={idx} 
+                            className="text-xs font-mono mb-1"
+                            style={{ 
+                              color: log.level === 'error' ? 'rgba(220, 38, 38, 0.7)' : 'rgba(251, 237, 224, 0.5)',
+                              fontSize: '11px'
+                            }}
+                          >
+                            [{new Date(log.timestamp).toLocaleTimeString()}] {log.message}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
                     {/* Show calendar event info if available */}
                     {msg.metadata?.calendar?.status === 'CREATED' && (
                       <div className="mt-2 pt-2 border-t border-gray-600">
@@ -553,10 +575,11 @@ export default function ChatPage() {
                     )}
                   </div>
                   <div
-                    className="mt-1 text-right"
+                    className="mt-1 mb-0 text-right"
                     style={{
                       color: 'rgba(251, 237, 224, 0.5)',
                       fontSize: '12px',
+                      lineHeight: '1.2',
                     }}
                   >
                     {new Date(msg.timestamp).toLocaleTimeString([], {

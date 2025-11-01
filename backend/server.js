@@ -47,7 +47,8 @@ app.get('/auth/google/start', (req, res) => {
   // For hackathon we hardcode userId = "demoUser"
   const scopes = [
     'https://www.googleapis.com/auth/calendar.events',
-    'https://www.googleapis.com/auth/gmail.send'
+    'https://www.googleapis.com/auth/gmail.send',
+    'https://www.googleapis.com/auth/gmail.readonly' // Needed to get user profile
   ];
 
   const url = oauth2Client.generateAuthUrl({

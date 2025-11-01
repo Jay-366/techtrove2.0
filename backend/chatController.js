@@ -16,6 +16,7 @@ export async function handleUserRequest(message, email) {
       response: result.message,
       calendar: result.calendar,
       actions: result.actions,
+      logs: result.logs || [], // Include backend logs for frontend display
       userId: 'demoUser'
     };
 
