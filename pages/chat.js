@@ -118,7 +118,7 @@ export default function ChatPage() {
     <div
       className="flex"
       style={{
-        backgroundColor: '#161823',
+        backgroundColor: '#000000',
         height: '100vh',
         position: 'fixed',
         top: 0,
@@ -135,8 +135,8 @@ export default function ChatPage() {
         style={{
           width: '280px',
           minWidth: '280px',
-          backgroundColor: '#1C1F2B',
-          borderRight: '1px solid rgba(80, 96, 108, 0.4)',
+          backgroundColor: '#0a0a0a',
+          borderRight: '1px solid rgba(255, 255, 255, 0.1)',
         }}
       >
         {/* Sidebar Header - Logo Row */}
@@ -169,16 +169,16 @@ export default function ChatPage() {
               className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4"
               style={{ color: 'rgba(251, 237, 224, 0.5)' }}
             />
-            <input
-              type="text"
-              placeholder="Search agent..."
-              className="w-full pl-9 pr-3 py-2 rounded-xl outline-none transition-all"
-              style={{
-                backgroundColor: '#161823',
-                border: '1px solid #50606C',
-                color: 'rgba(251, 237, 224, 0.8)',
-                fontSize: '14px',
-              }}
+              <input
+                type="text"
+                placeholder="Search agent..."
+                className="w-full pl-9 pr-3 py-2 rounded-xl outline-none transition-all"
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  fontSize: '14px',
+                }}
               onFocus={(e) => {
                 e.currentTarget.style.boxShadow = '0 0 8px rgba(251, 237, 224, 0.12)';
               }}
@@ -217,23 +217,23 @@ export default function ChatPage() {
 
            {/* New Chat Button */}
            <div>
-             <button
-               onClick={clearMessages}
-               className="w-full px-4 py-2 rounded-xl flex items-center justify-center gap-2 transition-all duration-200"
-               style={{
-                 border: '1px solid #FBede0',
-                 backgroundColor: 'transparent',
-                 color: '#FBede0',
-                 fontSize: '14px',
-               }}
-               onMouseEnter={(e) => {
-                 e.currentTarget.style.backgroundColor = '#FBede0';
-                 e.currentTarget.style.color = '#161823';
-               }}
-               onMouseLeave={(e) => {
-                 e.currentTarget.style.backgroundColor = 'transparent';
-                 e.currentTarget.style.color = '#FBede0';
-               }}>
+               <button
+                 onClick={clearMessages}
+                 className="w-full px-4 py-2 rounded-xl flex items-center justify-center gap-2 transition-all duration-200"
+                 style={{
+                   border: '1px solid rgba(255, 255, 255, 0.3)',
+                   backgroundColor: 'transparent',
+                   color: 'rgba(255, 255, 255, 0.9)',
+                   fontSize: '14px',
+                 }}
+                 onMouseEnter={(e) => {
+                   e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                   e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.5)';
+                 }}
+                 onMouseLeave={(e) => {
+                   e.currentTarget.style.backgroundColor = 'transparent';
+                   e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                 }}>
                <Plus className="w-4 h-4" />
                New Chat
              </button>
@@ -326,15 +326,15 @@ export default function ChatPage() {
           className="flex items-center justify-between px-3 md:px-6"
           style={{
             height: '60px',
-            backgroundColor: '#161823',
-            borderBottom: '1px solid #50606C',
+            backgroundColor: '#0a0a0a',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           }}
         >
           <div className="flex items-center gap-3">
             <div>
               <div
                 style={{
-                  color: '#FBede0',
+                  color: 'rgba(255, 255, 255, 0.95)',
                   fontSize: '15px',
                   fontWeight: 500,
                 }}
@@ -343,7 +343,7 @@ export default function ChatPage() {
               </div>
               <div
                 style={{
-                  color: 'rgba(251, 237, 224, 0.6)',
+                  color: 'rgba(255, 255, 255, 0.5)',
                   fontSize: '13px',
                 }}
               >
@@ -411,7 +411,7 @@ export default function ChatPage() {
               }}>
                 <div
                   style={{
-                    color: '#FBede0',
+                    color: 'rgba(255, 255, 255, 0.95)',
                     fontSize: 'clamp(24px, 5vw, 36px)',
                     fontWeight: 600,
                     letterSpacing: '0.5px',
@@ -431,15 +431,30 @@ export default function ChatPage() {
                     style={{
                       fontSize: 'clamp(12px, 3vw, 16px)',
                       textAlign: 'center',
-                      color: 'rgba(251, 237, 224, 0.7)',
+                      color: 'rgba(255, 255, 255, 0.6)',
                       marginTop: '12px',
                       whiteSpace: 'nowrap',
                     }}
                   >
                     Orchestrate your AI workflows with{' '}
-                    <span style={{ color: 'oklch(89.9% 0.061 343.231)' }}>unprecedented</span>{' '}
-                    <span style={{ color: 'oklch(89.9% 0.061 343.231)' }}>intelligence</span> and{' '}
-                    <span style={{ color: 'oklch(91.7% 0.08 205.041)' }}>seamless coordination</span>
+                    <span style={{ 
+                      background: 'linear-gradient(45deg, oklch(97.1% 0.014 343.198), oklch(98.4% 0.019 200.873))',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    }}>unprecedented</span>{' '}
+                    <span style={{ 
+                      background: 'linear-gradient(45deg, oklch(97.1% 0.014 343.198), oklch(98.4% 0.019 200.873))',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    }}>intelligence</span> and{' '}
+                    <span style={{ 
+                      background: 'linear-gradient(45deg, oklch(97.1% 0.014 343.198), oklch(98.4% 0.019 200.873))',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    }}>seamless coordination</span>
                   </div>
                 </div>
                 
@@ -509,11 +524,11 @@ export default function ChatPage() {
                     className="px-4 py-3 transition-all duration-200 rounded-2xl"
                     style={{
                       backgroundColor: msg.isError ? '#dc2626' : (
-                        msg.role === 'user' ? '#50606C' : '#1C1F2B'
+                        msg.role === 'user' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)'
                       ),
                       border:
-                        msg.role === 'assistant' && !msg.isError ? '1px solid #50606C' : 'none',
-                      color: msg.isError ? '#FBede0' : '#FBede0',
+                        msg.role === 'assistant' && !msg.isError ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+                      color: msg.isError ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.9)',
                       fontSize: '14px',
                       lineHeight: '1.6',
                       whiteSpace: 'pre-wrap',
@@ -573,7 +588,7 @@ export default function ChatPage() {
                     
                     {/* Status updates during execution */}
                     {msg.isStatusTracking && msg.metadata?.statusUpdates && msg.metadata.statusUpdates.length > 0 && (
-                      <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(80, 96, 108, 0.5)' }}>
+                      <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}>
                         {msg.metadata.statusUpdates.map((update, idx) => (
                           <div
                             key={idx}
@@ -583,7 +598,7 @@ export default function ChatPage() {
                                 ? 'rgba(34, 197, 94, 0.8)'
                                 : update.status === 'error'
                                 ? 'rgba(220, 38, 38, 0.8)'
-                                : 'rgba(251, 237, 224, 0.6)'
+                                : 'rgba(255, 255, 255, 0.5)'
                             }}
                           >
                             <span>
@@ -593,7 +608,7 @@ export default function ChatPage() {
                           </div>
                         ))}
                         {pending && (
-                          <div className="text-xs mt-2" style={{ color: 'rgba(251, 237, 224, 0.5)' }}>
+                          <div className="text-xs mt-2" style={{ color: 'rgba(255, 255, 255, 0.4)' }}>
                             Processing...
                           </div>
                         )}
@@ -602,8 +617,8 @@ export default function ChatPage() {
                     
                     {/* Show backend logs - visible in chat for transparency */}
                     {msg.metadata?.logs && msg.metadata.logs.length > 0 && (
-                      <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(80, 96, 108, 0.5)' }}>
-                        <div className="text-xs mb-1 font-mono" style={{ color: 'rgba(251, 237, 224, 0.4)' }}>Backend Processing:</div>
+                      <div className="mt-3 pt-3 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+                        <div className="text-xs mb-1 font-mono" style={{ color: 'rgba(255, 255, 255, 0.3)' }}>Backend Processing:</div>
                         {msg.metadata.logs.slice(-5).map((log, idx) => (
                           <div 
                             key={idx} 
@@ -906,7 +921,7 @@ export default function ChatPage() {
 
         input::placeholder,
         textarea::placeholder {
-          color: rgba(251, 237, 224, 0.5);
+          color: rgba(255, 255, 255, 0.4);
         }
 
         ::-webkit-scrollbar {
@@ -919,12 +934,12 @@ export default function ChatPage() {
         }
 
         ::-webkit-scrollbar-thumb {
-          background: rgba(80, 96, 108, 0.5);
+          background: rgba(255, 255, 255, 0.2);
           border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-          background: rgba(80, 96, 108, 0.7);
+          background: rgba(255, 255, 255, 0.3);
         }
       `}</style>
     </div>

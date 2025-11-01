@@ -35,6 +35,7 @@ export default function CreateAgentPage() {
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [savedAgentId, setSavedAgentId] = useState(""); // DB id
   const [copied, setCopied] = useState(false);
+  const [rawS3Status, setRawS3Status] = useState("");
 
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const categoryDropdownRef = useRef(null);
@@ -213,6 +214,36 @@ export default function CreateAgentPage() {
     navigator.clipboard.writeText(savedAgentId);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleS3Upload = async () => {
+    if (selectedFiles.length === 0) {
+      setRawS3Status("❌ Please select at least one file first");
+      return;
+    }
+
+    setRawS3Status("⏳ Uploading to S3...");
+    
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFiles[0]); // Upload first file only
+
+      const res = await fetch("/api/uploadAgent", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "");
+        throw new Error(errText || "Failed to upload to S3");
+      }
+
+      const data = await res.json();
+      setRawS3Status(`✅ Uploaded successfully! S3 Key: ${data.key || 'N/A'}`);
+    } catch (err) {
+      console.error("S3 upload failed:", err);
+      setRawS3Status(`❌ Upload failed: ${err?.message || "Unknown error"}`);
+    }
   };
 
   // timeline steps (updated to remove Lighthouse, encryption, token-gating chain stuff)
@@ -651,22 +682,25 @@ export default function CreateAgentPage() {
               Create Your Agent
             </Label>
 
+           
+
+            {/* S3 Only Upload Button */}
             <button
-              onClick={handleUpload}
-              disabled={isUploading}
-              className="w-full h-14 rounded-md text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg"
+              onClick={handleS3Upload}
+              disabled={selectedFiles.length === 0}
+              className="w-full h-14 rounded-md text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg mt-4"
               style={{
                 background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
               }}
               onMouseEnter={(e) => {
-                if (!isUploading) {
+                if (!(selectedFiles.length === 0)) {
                   e.currentTarget.style.transform = "translateY(-2px)";
                   e.currentTarget.style.boxShadow = "0 6px 16px rgba(0, 0, 0, 0.2)";
                 }
               }}
               onMouseLeave={(e) => {
-                if (!isUploading) {
+                if (!(selectedFiles.length === 0)) {
                   e.currentTarget.style.transform = "translateY(0)";
                   e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.1)";
                 }
@@ -675,10 +709,33 @@ export default function CreateAgentPage() {
               <div className="flex items-center justify-center gap-2">
                 <Upload className="w-5 h-5" />
                 <span className="text-lg font-medium">
-                  {isUploading ? "Saving..." : "Save to Marketplace"}
+                  Upload file to storage only (S3)
                 </span>
               </div>
             </button>
+
+            {/* S3 Upload Status */}
+            {rawS3Status && (
+              <div className="mt-3 text-sm p-3 rounded-md" style={{ 
+                backgroundColor: rawS3Status.includes('✅') 
+                  ? 'rgba(34, 197, 94, 0.1)' 
+                  : rawS3Status.includes('❌')
+                  ? 'rgba(220, 38, 38, 0.1)'
+                  : 'rgba(255, 255, 255, 0.05)',
+                border: rawS3Status.includes('✅') 
+                  ? '1px solid rgba(34, 197, 94, 0.3)' 
+                  : rawS3Status.includes('❌')
+                  ? '1px solid rgba(220, 38, 38, 0.3)'
+                  : '1px solid rgba(255, 255, 255, 0.1)',
+                color: rawS3Status.includes('✅') 
+                  ? 'rgba(34, 197, 94, 0.9)' 
+                  : rawS3Status.includes('❌')
+                  ? 'rgba(220, 38, 38, 0.9)'
+                  : 'rgba(255, 255, 255, 0.7)'
+              }}>
+                {rawS3Status}
+              </div>
+            )}
           </div>
 
           {/* upload progress bar */}
