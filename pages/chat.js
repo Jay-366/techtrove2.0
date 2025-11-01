@@ -131,9 +131,10 @@ export default function ChatPage() {
     >
       {/* Sidebar - Agent List */}
       <div
-        className="flex flex-col"
+        className="hidden md:flex flex-col"
         style={{
           width: '280px',
+          minWidth: '280px',
           backgroundColor: '#1C1F2B',
           borderRight: '1px solid rgba(80, 96, 108, 0.4)',
         }}
@@ -322,7 +323,7 @@ export default function ChatPage() {
       <div className="flex-1 flex flex-col">
         {/* Chat Header */}
         <div
-          className="flex items-center justify-between px-6"
+          className="flex items-center justify-between px-3 md:px-6"
           style={{
             height: '60px',
             backgroundColor: '#161823',
@@ -393,7 +394,7 @@ export default function ChatPage() {
         <div
           ref={messagesContainerRef}
           onScroll={handleScroll}
-          className="flex-1 overflow-y-auto px-6 py-4 relative"
+          className="flex-1 overflow-y-auto px-3 md:px-6 py-4 relative"
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -401,7 +402,7 @@ export default function ChatPage() {
             alignItems: 'center',
           }}
         >
-          <div className="max-w-4xl mx-auto space-y-4 w-full" style={{ flex: messages.length === 0 ? 'none' : 1, display: 'flex', flexDirection: 'column', justifyContent: messages.length === 0 ? 'center' : 'flex-start' }}>
+          <div className="max-w-4xl mx-auto space-y-4 w-full px-2 md:px-0" style={{ flex: messages.length === 0 ? 'none' : 1, display: 'flex', flexDirection: 'column', justifyContent: messages.length === 0 ? 'center' : 'flex-start' }}>
             {/* Welcome Message and Input - Only shown when no messages */}
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center" style={{ 
@@ -411,14 +412,14 @@ export default function ChatPage() {
                 <div
                   style={{
                     color: '#FBede0',
-                    fontSize: '36px',
+                    fontSize: 'clamp(24px, 5vw, 36px)',
                     fontWeight: 600,
                     letterSpacing: '0.5px',
                     textAlign: 'center',
                   }}
                 >
                   <SplitText
-                    text="Hello, Are You Ready?"
+                    text="Hello, What can I help with?"
                     className="text-center"
                     tag="h2"
                     delay={100}
@@ -428,7 +429,7 @@ export default function ChatPage() {
                   {/* Description Text */}
                   <div
                     style={{
-                      fontSize: '16px',
+                      fontSize: 'clamp(12px, 3vw, 16px)',
                       textAlign: 'center',
                       color: 'rgba(251, 237, 224, 0.7)',
                       marginTop: '12px',
@@ -443,7 +444,7 @@ export default function ChatPage() {
                 </div>
                 
                 {/* AI Prompt Input Container - Empty State */}
-                <div className="w-full max-w-3xl" style={{ paddingBottom: '5px' }}>
+                <div className="w-full max-w-3xl px-2 md:px-0" style={{ paddingBottom: '5px' }}>
                   <PromptInputBox
                     onSend={handleSend}
                     isLoading={pending}
@@ -453,7 +454,7 @@ export default function ChatPage() {
                 </div>
 
                 {/* Suggested Prompts */}
-                <div className="w-full max-w-3xl flex flex-wrap justify-center gap-2">
+                <div className="w-full max-w-3xl flex flex-wrap justify-center gap-2 px-2 md:px-0">
                   {[
                     { text: 'Schedule a meeting', icon: Calendar, prompt: 'Schedule a meeting tomorrow at 2pm' },
                     { text: 'Plan my week', icon: Sparkles, prompt: 'Plan my week ahead' },
@@ -502,7 +503,7 @@ export default function ChatPage() {
                   marginTop: index === 0 ? '5px' : '0',
                 }}
               >
-                <div className="flex flex-col" style={{ maxWidth: '70%' }}>
+                <div className="flex flex-col w-full max-w-[90%] md:max-w-[70%]">
                   <div
                     className="px-4 py-3 transition-all duration-200 rounded-2xl"
                     style={{
@@ -646,7 +647,7 @@ export default function ChatPage() {
         {/* Input Bar (Fixed Bottom) - Only shown when there are messages */}
         {messages.length > 0 && (
         <div
-          className="px-6"
+          className="px-3 md:px-6"
           style={{
             backgroundColor: '#161823',
             paddingTop: '12px',
@@ -654,7 +655,7 @@ export default function ChatPage() {
             marginBottom: '5px',
           }}
         >
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto px-2 md:px-0">
             <PromptInputBox
               onSend={handleSend}
               isLoading={pending}
@@ -669,9 +670,10 @@ export default function ChatPage() {
       {/* Info Drawer */}
       {showInfoDrawer && (
         <div
-          className="transition-all duration-300 overflow-y-auto"
+          className="transition-all duration-300 overflow-y-auto fixed md:relative inset-y-0 right-0 z-50"
           style={{
-            width: '360px',
+            width: '100%',
+            maxWidth: '360px',
             backgroundColor: '#1C1F2B',
             borderLeft: '1px solid #50606C',
             animation: 'slideIn 300ms ease-out',
