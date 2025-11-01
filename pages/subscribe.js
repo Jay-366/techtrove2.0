@@ -1,12 +1,54 @@
 "use client";
 
 import React, { useState } from "react";
-import { Check, X } from "lucide-react";
+import { Check, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Navigation from "@/components/Navigation";
 
 export default function SubscribePage() {
   const [isAnnual, setIsAnnual] = useState(false);
+  const [loadingPlan, setLoadingPlan] = useState(null);
+
+  const handleSubscribe = async (planName) => {
+    setLoadingPlan(planName);
+    
+    try {
+      // For free plan, just redirect to chat
+      if (planName === 'Free') {
+        window.location.href = '/chat';
+        return;
+      }
+
+      // Create Stripe checkout session
+      const response = await fetch('/api/stripe-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          planName: planName,
+          isAnnual: isAnnual,
+          successUrl: `${window.location.origin}/payment/success`,
+          cancelUrl: `${window.location.origin}/payment/canceled`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.checkoutUrl) {
+        // Redirect to Stripe checkout
+        window.location.href = data.checkoutUrl;
+      } else {
+        console.error('Checkout error:', data.message);
+        alert('Sorry, there was an error processing your subscription. Please try again.');
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      alert('Sorry, there was an error processing your subscription. Please try again.');
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
 
   const plans = [
     {
@@ -167,7 +209,7 @@ export default function SubscribePage() {
                 <p className="text-gray-400 text-sm mb-4">{plan.description}</p>
                 <div className="flex items-baseline gap-2">
                   <span className="text-5xl font-bold">
-                    ${isAnnual ? plan.price.annual : plan.price.monthly}
+                    RM{isAnnual ? plan.price.annual : plan.price.monthly}
                   </span>
                   {plan.price.monthly > 0 && (
                     <span className="text-gray-500">
@@ -178,22 +220,35 @@ export default function SubscribePage() {
               </div>
 
               <button
-                className="w-full py-3 rounded-lg font-medium transition-all duration-300"
+                className="w-full py-3 rounded-lg font-medium transition-all duration-300 relative"
                 style={plan.buttonStyle}
+                onClick={() => handleSubscribe(plan.name)}
+                disabled={loadingPlan === plan.name}
                 onMouseEnter={(e) => {
-                  Object.assign(e.currentTarget.style, plan.hoverStyle);
+                  if (loadingPlan !== plan.name) {
+                    Object.assign(e.currentTarget.style, plan.hoverStyle);
+                  }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "none";
-                  e.currentTarget.style.border =
-                    plan.buttonStyle.border || "none";
-                  if (plan.hoverStyle.backgroundColor) {
-                    e.currentTarget.style.backgroundColor = "transparent";
+                  if (loadingPlan !== plan.name) {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
+                    e.currentTarget.style.border =
+                      plan.buttonStyle.border || "none";
+                    if (plan.hoverStyle.backgroundColor) {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                    }
                   }
                 }}
               >
-                {plan.name === "Free" ? "Get Started" : "Start Free Trial"}
+                {loadingPlan === plan.name ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Processing...
+                  </div>
+                ) : (
+                  plan.name === "Free" ? "Get Started" : "Subscribe Now"
+                )}
               </button>
 
               <div className="mt-8 space-y-4">
