@@ -100,18 +100,18 @@ export default function FileUpload({ onFilesChange }) {
         onClick={() => inputRef.current?.click()}
         initial={false}
         animate={{
-          borderColor: isDragging ? "#f8ede0" : "#5d606c",
+          borderColor: isDragging ? "oklch(89.9% 0.061 343.231)" : "rgba(255, 255, 255, 0.2)",
           scale: isDragging ? 1.02 : 1,
         }}
         whileHover={{ scale: 1.01 }}
         transition={{ duration: 0.2 }}
         className={clsx(
           "relative rounded-md p-8 md:p-12 text-center cursor-pointer border-2 border-dashed shadow-sm hover:shadow-md backdrop-blur group",
-          isDragging && "ring-4 ring-[#f8ede0]/30 border-[#f8ede0]"
+          isDragging && "ring-4 ring-[oklch(89.9% 0.061 343.231)]/30"
         )}
         style={{
-          backgroundColor: "#1C1F2B",
-          borderColor: isDragging ? "#f8ede0" : "#5d606c",
+          backgroundColor: "#000000",
+          borderColor: isDragging ? "oklch(89.9% 0.061 343.231)" : "rgba(255, 255, 255, 0.2)",
         }}
       >
         <div className="flex flex-col items-center gap-5">
@@ -134,40 +134,59 @@ export default function FileUpload({ onFilesChange }) {
                 repeat: isDragging ? Infinity : 0,
                 ease: "easeInOut",
               }}
-              className="absolute -inset-4 bg-[#f8ede0]/10 rounded-full blur-md"
-              style={{ display: isDragging ? "block" : "none" }}
+              className="absolute -inset-4 rounded-full blur-md"
+              style={{ 
+                display: isDragging ? "block" : "none",
+                background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
+                opacity: 0.1
+              }}
             />
             <UploadCloud
               className={clsx(
                 "w-16 h-16 md:w-20 md:h-20 drop-shadow-sm",
                 isDragging
-                  ? "text-[#f8ede0]"
-                  : "text-[#5d606c] group-hover:text-[#f8ede0] transition-colors duration-300"
+                  ? "text-white"
+                  : "text-white group-hover:opacity-80 transition-all duration-300"
               )}
+              style={{
+                filter: isDragging 
+                  ? 'drop-shadow(0 0 8px oklch(89.9% 0.061 343.231))'
+                  : 'none'
+              }}
             />
           </motion.div>
 
           <div className="space-y-2">
-            <h3 className="text-xl md:text-2xl font-semibold text-[#f8ede0]">
+            <h3 className="text-xl md:text-2xl font-semibold text-white">
               {isDragging
                 ? "Drop files here"
                 : files.length
                 ? "Add more files"
                 : "Upload your files"}
             </h3>
-            <p className="text-[#5d606c] md:text-lg max-w-md mx-auto">
+            <p className="md:text-lg max-w-md mx-auto" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
               {isDragging ? (
-                <span className="font-medium text-[#f8ede0]">
+                <span className="font-medium text-white">
                   Release to upload
                 </span>
               ) : (
                 <>
                   Drag & drop files here, or{" "}
-                  <span className="text-[#f8ede0] font-medium">browse</span>
+                  <span 
+                    className="font-medium"
+                    style={{
+                      background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    }}
+                  >
+                    browse
+                  </span>
                 </>
               )}
             </p>
-            <p className="text-sm text-[#5d606c]">All file types supported</p>
+            <p className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>All file types supported</p>
           </div>
 
           <input
@@ -189,7 +208,7 @@ export default function FileUpload({ onFilesChange }) {
               animate={{ opacity: 1 }}
               className="flex justify-between items-center mb-3 px-2"
             >
-              <h3 className="font-semibold text-lg md:text-xl text-[#f8ede0]">
+              <h3 className="font-semibold text-lg md:text-xl text-white">
                 Uploaded files ({files.length})
               </h3>
 
@@ -201,7 +220,11 @@ export default function FileUpload({ onFilesChange }) {
                       onFilesChange([]);
                     }
                   }}
-                  className="text-sm font-medium px-3 py-1 rounded-md transition-colors duration-200 bg-[#5d606c]/20 hover:bg-[#5d606c]/40 text-[#f8ede0]"
+                  className="text-sm font-medium px-3 py-1 rounded-md transition-colors duration-200 text-white hover:bg-white hover:bg-opacity-10"
+                  style={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)'
+                  }}
                 >
                   Clear all
                 </button>
@@ -214,7 +237,7 @@ export default function FileUpload({ onFilesChange }) {
           className={clsx(
             "flex flex-col gap-3 overflow-y-auto pr-2",
             files.length > 3 &&
-              "max-h-96 scrollbar-thin scrollbar-thumb-[#5d606c] scrollbar-track-transparent"
+              "max-h-96 scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent"
           )}
         >
           <AnimatePresence>
@@ -226,7 +249,10 @@ export default function FileUpload({ onFilesChange }) {
                 exit={{ opacity: 0, y: -20, scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 300, damping: 24 }}
                 className="px-4 py-4 flex items-start gap-4 rounded-md shadow hover:shadow-md transition-all duration-200"
-                style={{ backgroundColor: "#1C1F2B" }}
+                style={{ 
+                  backgroundColor: "rgba(255, 255, 255, 0.05)",
+                  border: '1px solid rgba(255, 255, 255, 0.1)'
+                }}
               >
                 {/* Thumbnail */}
                 <div className="relative flex-shrink-0">
@@ -234,12 +260,14 @@ export default function FileUpload({ onFilesChange }) {
                     <img
                       src={file.preview}
                       alt={file.name}
-                      className="w-16 h-16 md:w-20 md:h-20 rounded-lg object-cover border border-[#5d606c] shadow-sm"
+                      className="w-16 h-16 md:w-20 md:h-20 rounded-lg object-cover shadow-sm"
+                      style={{ border: '1px solid rgba(255, 255, 255, 0.2)' }}
                     />
                   ) : file.type.startsWith("video/") ? (
                     <video
                       src={file.preview}
-                      className="w-16 h-16 md:w-20 md:h-20 rounded-lg object-cover border border-[#5d606c] shadow-sm"
+                      className="w-16 h-16 md:w-20 md:h-20 rounded-lg object-cover shadow-sm"
+                      style={{ border: '1px solid rgba(255, 255, 255, 0.2)' }}
                       controls={false}
                       muted
                       loop
@@ -247,7 +275,7 @@ export default function FileUpload({ onFilesChange }) {
                       preload="metadata"
                     />
                   ) : (
-                    <FileIcon className="w-16 h-16 md:w-20 md:h-20 text-[#5d606c]" />
+                    <FileIcon className="w-16 h-16 md:w-20 md:h-20" style={{ color: 'rgba(255, 255, 255, 0.6)' }} />
                   )}
 
                   {file.progress === 100 && (
@@ -255,9 +283,14 @@ export default function FileUpload({ onFilesChange }) {
                       initial={{ opacity: 0, scale: 0.5 }}
                       animate={{ opacity: 1, scale: 1 }}
                       className="absolute -right-2 -bottom-2 rounded-full shadow-sm"
-                      style={{ backgroundColor: "#1C1F2B" }}
+                      style={{ backgroundColor: "#000000" }}
                     >
-                      <CheckCircle className="w-5 h-5 text-[#f8ede0]" />
+                      <CheckCircle 
+                        className="w-5 h-5" 
+                        style={{ 
+                          color: 'oklch(89.9% 0.061 343.231)'
+                        }}
+                      />
                     </motion.div>
                   )}
                 </div>
@@ -267,9 +300,9 @@ export default function FileUpload({ onFilesChange }) {
                   <div className="flex flex-col gap-1 w-full">
                     {/* Filename */}
                     <div className="flex items-center gap-2 min-w-0">
-                      <FileIcon className="w-5 h-5 flex-shrink-0 text-[#f8ede0]" />
+                      <FileIcon className="w-5 h-5 flex-shrink-0 text-white" />
                       <h4
-                        className="font-medium text-base md:text-lg truncate text-[#f8ede0]"
+                        className="font-medium text-base md:text-lg truncate text-white"
                         title={file.name}
                       >
                         {file.name}
@@ -277,7 +310,7 @@ export default function FileUpload({ onFilesChange }) {
                     </div>
 
                     {/* Details & remove/loading */}
-                    <div className="flex items-center justify-between gap-3 text-sm text-[#5d606c]">
+                    <div className="flex items-center justify-between gap-3 text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
                       <span className="text-xs md:text-sm">
                         {formatFileSize(file.size)}
                       </span>
@@ -287,10 +320,14 @@ export default function FileUpload({ onFilesChange }) {
                         </span>
 
                         {file.progress < 100 ? (
-                          <Loader className="w-4 h-4 animate-spin text-[#f8ede0]" />
+                          <Loader 
+                            className="w-4 h-4 animate-spin" 
+                            style={{ color: 'oklch(89.9% 0.061 343.231)' }}
+                          />
                         ) : (
                           <Trash2
-                            className="w-4 h-4 cursor-pointer text-[#5d606c] hover:text-red-500 transition-colors duration-200"
+                            className="w-4 h-4 cursor-pointer hover:text-red-500 transition-colors duration-200"
+                            style={{ color: 'rgba(255, 255, 255, 0.6)' }}
                             onClick={(e) => {
                               e.stopPropagation();
                               setFiles((prev) => {
@@ -317,7 +354,7 @@ export default function FileUpload({ onFilesChange }) {
                   {/* Progress bar */}
                   <div
                     className="w-full h-2 rounded-full overflow-hidden mt-3"
-                    style={{ backgroundColor: "#5d606c" }}
+                    style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
                   >
                     <motion.div
                       initial={{ width: 0 }}
@@ -330,8 +367,7 @@ export default function FileUpload({ onFilesChange }) {
                       }}
                       className="h-full rounded-full shadow-inner"
                       style={{
-                        backgroundColor:
-                          file.progress < 100 ? "#f8ede0" : "#f8ede0",
+                        background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
                       }}
                     />
                   </div>

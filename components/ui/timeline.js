@@ -31,7 +31,7 @@ export const Timeline = ({ data }) => {
   return (
     <div
       className="w-full font-sans md:px-10"
-      style={{ backgroundColor: "#161823" }}
+      style={{ backgroundColor: "#000000" }}
       ref={containerRef}
     >
       <div ref={ref} className="relative max-w-7xl mx-auto pb-40 pt-0">
@@ -44,13 +44,13 @@ export const Timeline = ({ data }) => {
             <div className="sticky flex flex-col md:flex-row z-40 items-center top-40 self-start max-w-xs lg:max-w-sm md:w-full">
               <div
                 className="h-10 absolute left-0 md:left-0 w-10 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: "#161823" }}
+                style={{ backgroundColor: "#000000" }}
               >
                 <div
                   className="h-4 w-4 rounded-full border p-2"
                   style={{
-                    backgroundColor: "#5d606c",
-                    borderColor: "#f8ede0",
+                    background: "linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))",
+                    borderColor: "rgba(255, 255, 255, 0.2)",
                   }}
                 />
               </div>
@@ -58,7 +58,7 @@ export const Timeline = ({ data }) => {
               <div className="hidden md:block md:pl-20">
                 <h3
                   className="text-xl md:text-5xl font-bold mb-2"
-                  style={{ color: "#5d606c" }}
+                  style={{ color: "rgba(255, 255, 255, 0.6)" }}
                 >
                   {item.title}
                 </h3>
@@ -66,7 +66,7 @@ export const Timeline = ({ data }) => {
                 {item.subtitle && (
                   <h4
                     className="text-lg md:text-2xl font-bold mb-1"
-                    style={{ color: "#f8ede0" }}
+                    style={{ color: "#ffffff" }}
                   >
                     {item.subtitle}
                   </h4>
@@ -75,7 +75,7 @@ export const Timeline = ({ data }) => {
                 {item.description && (
                   <p
                     className="text-sm md:text-base"
-                    style={{ color: "#5d606c" }}
+                    style={{ color: "rgba(255, 255, 255, 0.6)" }}
                   >
                     {item.description}
                   </p>
@@ -89,7 +89,7 @@ export const Timeline = ({ data }) => {
               <div className="md:hidden block mb-4">
                 <h3
                   className="text-2xl mb-2 text-left font-bold"
-                  style={{ color: "#5d606c" }}
+                  style={{ color: "rgba(255, 255, 255, 0.6)" }}
                 >
                   {item.title}
                 </h3>
@@ -97,14 +97,14 @@ export const Timeline = ({ data }) => {
                 {item.subtitle && (
                   <h4
                     className="text-xl font-bold mb-1"
-                    style={{ color: "#f8ede0" }}
+                    style={{ color: "#ffffff" }}
                   >
                     {item.subtitle}
                   </h4>
                 )}
 
                 {item.description && (
-                  <p className="text-sm" style={{ color: "#5d606c" }}>
+                  <p className="text-sm" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
                     {item.description}
                   </p>
                 )}
@@ -127,17 +127,17 @@ export const Timeline = ({ data }) => {
             className="absolute inset-x-0 top-0 w-[2px] h-full"
             style={{
               background:
-                "linear-gradient(to bottom, transparent 0%, #5d606c 10%, #5d606c 90%, transparent 100%)",
+                "linear-gradient(to bottom, transparent 0%, rgba(255, 255, 255, 0.2) 10%, rgba(255, 255, 255, 0.2) 90%, transparent 100%)",
             }}
           />
 
-          {/* scroll progress line (peach glow) */}
+          {/* scroll progress line (gradient glow) */}
           <motion.div
             style={{
               height: heightTransform,
               opacity: opacityTransform,
               background:
-                "linear-gradient(to top, #f8ede0 0%, #f8ede0 10%, transparent 100%)",
+                "linear-gradient(to top, oklch(89.9% 0.061 343.231) 0%, oklch(91.7% 0.08 205.041) 10%, transparent 100%)",
             }}
             className="absolute inset-x-0 top-0 w-[2px] rounded-full"
           />

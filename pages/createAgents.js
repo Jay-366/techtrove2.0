@@ -229,12 +229,15 @@ export default function CreateAgentPage() {
               type="text"
               value={agentName}
               onChange={(e) => setAgentName(e.target.value)}
-              className="w-full h-12 bg-transparent border-[#5d606c] text-[#f8ede0] placeholder-transparent focus:border-[#f8ede0] hover:border-[#f8ede0]/60 hover:shadow-[0_0_15px_rgba(248,237,224,0.1)] peer"
+              className="w-full h-12 bg-transparent text-white placeholder-transparent peer"
+              style={{
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+              }}
             />
             <Label className={`absolute left-4 transition-all duration-200 pointer-events-none ${
               agentName && agentName.trim() !== ''
-                ? '-top-2 text-xs text-[#f8ede0] bg-[#161823] px-1'
-                : 'top-3 text-sm text-[#5d606c] peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#f8ede0] peer-focus:bg-[#161823] peer-focus:px-1'
+                ? '-top-2 text-xs text-white bg-black px-1'
+                : 'top-3 text-sm text-gray-400 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-white peer-focus:bg-black peer-focus:px-1'
             }`}>
               Agent Name <span className="text-red-500">*</span>
             </Label>
@@ -261,7 +264,10 @@ export default function CreateAgentPage() {
               </button>
 
               {showCategoryDropdown && (
-                <div className="absolute top-full left-0 mt-2 w-full bg-[rgba(255, 255, 255, 0.05)] border border-[#5d606c] rounded-md shadow-lg z-10 max-h-64 overflow-y-auto scrollbar-hide">
+                <div className="absolute top-full left-0 mt-2 w-full rounded-md shadow-lg z-10 max-h-64 overflow-y-auto scrollbar-hide" style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}>
                   <style jsx>{`
                     .scrollbar-hide::-webkit-scrollbar {
                       display: none;
@@ -279,32 +285,29 @@ export default function CreateAgentPage() {
                           setCategory(cat);
                           setShowCategoryDropdown(false);
                         }}
-                        className="w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center gap-3 hover:bg-[rgba(93,96,108,0.3)]"
+                        className="w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center gap-3 hover:bg-white hover:bg-opacity-10"
                       >
                         <div
                           className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
                           style={{
                             backgroundColor:
                               category === cat
-                                ? "#f8ede0"
+                                ? "oklch(89.9% 0.061 343.231)"
                                 : "transparent",
                             border: `2px solid ${
                               category === cat
-                                ? "#f8ede0"
-                                : "#5d606c"
+                                ? "oklch(89.9% 0.061 343.231)"
+                                : "rgba(255, 255, 255, 0.3)"
                             }`,
                           }}
                         >
                           {category === cat && (
                             <div
-                              className="w-2 h-2 rounded-full"
-                              style={{
-                                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                              }}
+                              className="w-2 h-2 rounded-full bg-black"
                             />
                           )}
                         </div>
-                        <span className="text-[#f8ede0]">{cat}</span>
+                        <span className="text-white">{cat}</span>
                       </button>
                     ))}
                   </div>
@@ -319,12 +322,15 @@ export default function CreateAgentPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={5}
-              className="w-full resize-none bg-transparent border-[#5d606c] text-[#f8ede0] placeholder-transparent focus:border-[#f8ede0] hover:border-[#f8ede0]/60 hover:shadow-[0_0_15px_rgba(248,237,224,0.1)] peer"
+              className="w-full resize-none bg-transparent text-white placeholder-transparent peer"
+              style={{
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+              }}
             />
             <Label className={`absolute left-4 transition-all duration-200 pointer-events-none ${
               description && description.trim() !== ''
-                ? '-top-2 text-xs text-[#f8ede0] bg-[#161823] px-1'
-                : 'top-3 text-sm text-[#5d606c] peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#f8ede0] peer-focus:bg-[#161823] peer-focus:px-1'
+                ? '-top-2 text-xs text-white bg-black px-1'
+                : 'top-3 text-sm text-gray-400 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-white peer-focus:bg-black peer-focus:px-1'
             }`}>
               Description <span className="text-red-500">*</span>
             </Label>
@@ -339,12 +345,12 @@ export default function CreateAgentPage() {
       content: (
         <div className="space-y-6">
           <div>
-            <Label className="block mb-3 text-sm font-medium text-[#f8ede0]">
+            <Label className="block mb-3 text-sm font-medium text-white">
               Model / Dataset / Agent Bundle{" "}
               <span className="text-red-500">*</span>
             </Label>
             <FileUpload onFilesChange={handleFilesChange} />
-            <p className="text-xs text-[#5d606c] mt-2">
+            <p className="text-xs mt-2" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
               These files will be stored in our database / storage backend,
               linked to your agent profile.
             </p>
@@ -359,7 +365,7 @@ export default function CreateAgentPage() {
       content: (
         <div className="space-y-6">
           <div>
-            <Label className="block mb-3 text-sm font-medium text-[#f8ede0]">
+            <Label className="block mb-3 text-sm font-medium text-white">
               Monetization Options{" "}
               <span className="text-red-500">*</span>
             </Label>
@@ -381,31 +387,27 @@ export default function CreateAgentPage() {
                   <div
                     className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0 mt-1"
                     style={{
-                      backgroundColor: selectedAccessOptions.includes(
-                        "subscribers"
-                      )
-                        ? "#f8ede0"
+                      background: selectedAccessOptions.includes("subscribers")
+                        ? 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))'
                         : "transparent",
-                      border: `2px solid ${
-                        selectedAccessOptions.includes("subscribers")
-                          ? "#f8ede0"
-                          : "#5d606c"
-                      }`,
+                      border: selectedAccessOptions.includes("subscribers")
+                        ? 'none'
+                        : '2px solid rgba(255, 255, 255, 0.2)',
                     }}
                   >
                     {selectedAccessOptions.includes("subscribers") && (
                       <Check
                         className="w-4 h-4"
-                        style={{ color: "#161823" }}
+                        style={{ color: "#000000" }}
                       />
                     )}
                   </div>
 
                   <div className="flex-1">
-                    <h4 className="mb-1 font-semibold text-[#f8ede0]">
+                    <h4 className="mb-1 font-semibold text-white">
                       Subscribers (monthly tokens)
                     </h4>
-                    <p className="text-sm mb-3 text-[#5d606c]">
+                    <p className="text-sm mb-3" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
                       Users get monthly tokens to query this agent.
                     </p>
 
@@ -426,16 +428,17 @@ export default function CreateAgentPage() {
                               );
                               setMonthlyTokens(value);
                             }}
-                            className="h-11 bg-transparent border-[#5d606c] text-[#f8ede0] placeholder-transparent focus:border-[#f8ede0] hover:border-[#f8ede0]/60 peer w-full"
+                            className="h-11 bg-transparent text-white placeholder-transparent peer w-full"
+                            style={{ border: '1px solid rgba(255, 255, 255, 0.2)' }}
                           />
                           <Label className={`absolute left-4 transition-all duration-200 pointer-events-none ${
                             monthlyTokens && monthlyTokens.trim() !== ''
-                              ? '-top-2 text-xs text-[#f8ede0] bg-[rgba(255, 255, 255, 0.05)] px-1'
-                              : 'top-3 text-sm text-[#5d606c] peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#f8ede0] peer-focus:bg-[rgba(255, 255, 255, 0.05)] peer-focus:px-1'
-                          }`}>
+                              ? '-top-2 text-xs text-white bg-black px-1'
+                              : 'top-3 text-sm peer-focus:-top-2 peer-focus:text-xs peer-focus:text-white peer-focus:bg-black peer-focus:px-1'
+                          }`} style={{ color: monthlyTokens && monthlyTokens.trim() !== '' ? '#ffffff' : 'rgba(255, 255, 255, 0.6)' }}>
                             Monthly Tokens
                           </Label>
-                          <p className="mt-2 text-sm text-[#5d606c]">
+                          <p className="mt-2 text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
                             Tokens users get monthly for queries (e.g., 10000).
                           </p>
                         </div>
@@ -447,12 +450,12 @@ export default function CreateAgentPage() {
 
               {/* Pay Per Use */}
               <div
-                className="rounded-md p-5 cursor-pointer transition-all duration-300 hover:shadow-[0_0_15px_rgba(248,237,224,0.1)]"
+                className="rounded-md p-5 cursor-pointer transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                 style={{
                   backgroundColor: "rgba(255, 255, 255, 0.05)",
                   border: selectedAccessOptions.includes("payperuse")
-                    ? "1px solid #f8ede0"
-                    : "1px solid #5d606c",
+                    ? "1px solid oklch(89.9% 0.061 343.231)"
+                    : "1px solid rgba(255, 255, 255, 0.2)",
                 }}
                 onClick={() => toggleAccessOption("payperuse")}
               >
@@ -464,28 +467,27 @@ export default function CreateAgentPage() {
                       backgroundColor: selectedAccessOptions.includes(
                         "payperuse"
                       )
-                        ? "#f8ede0"
+                        ? "oklch(89.9% 0.061 343.231)"
                         : "transparent",
                       border: `2px solid ${
                         selectedAccessOptions.includes("payperuse")
-                          ? "#f8ede0"
-                          : "#5d606c"
+                          ? "oklch(89.9% 0.061 343.231)"
+                          : "rgba(255, 255, 255, 0.3)"
                       }`,
                     }}
                   >
                     {selectedAccessOptions.includes("payperuse") && (
                       <Check
-                        className="w-4 h-4"
-                        style={{ color: "#161823" }}
+                        className="w-4 h-4 text-black"
                       />
                     )}
                   </div>
 
                   <div className="flex-1">
-                    <h4 className="mb-1 font-semibold text-[#f8ede0]">
+                    <h4 className="mb-1 font-semibold text-white">
                       Pay-Per-Query (token-based)
                     </h4>
-                    <p className="text-sm mb-3 text-[#5d606c]">
+                    <p className="text-sm mb-3" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
                       Users pay tokens each time they query this agent.
                     </p>
 
@@ -501,16 +503,17 @@ export default function CreateAgentPage() {
                             );
                             setTokensPerQuery(value);
                           }}
-                          className="h-11 bg-transparent border-[#5d606c] text-[#f8ede0] placeholder-transparent focus:border-[#f8ede0] hover:border-[#f8ede0]/60 peer w-full"
+                          className="h-11 bg-transparent text-white placeholder-transparent peer w-full"
+                          style={{ border: '1px solid rgba(255, 255, 255, 0.2)' }}
                         />
                         <Label className={`absolute left-4 transition-all duration-200 pointer-events-none ${
                           tokensPerQuery && tokensPerQuery.trim() !== ''
-                            ? '-top-2 text-xs text-[#f8ede0] bg-[rgba(255, 255, 255, 0.05)] px-1'
-                            : 'top-3 text-sm text-[#5d606c] peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#f8ede0] peer-focus:bg-[rgba(255, 255, 255, 0.05)] peer-focus:px-1'
-                        }`}>
+                            ? '-top-2 text-xs text-white bg-black px-1'
+                            : 'top-3 text-sm peer-focus:-top-2 peer-focus:text-xs peer-focus:text-white peer-focus:bg-black peer-focus:px-1'
+                        }`} style={{ color: tokensPerQuery && tokensPerQuery.trim() !== '' ? '#ffffff' : 'rgba(255, 255, 255, 0.6)' }}>
                           Tokens Per Query
                         </Label>
-                        <p className="mt-2 text-sm text-[#5d606c]">
+                        <p className="mt-2 text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
                           Tokens required per query (e.g., 100).
                         </p>
                       </div>
@@ -521,12 +524,12 @@ export default function CreateAgentPage() {
 
               {/* Public / Free */}
               <div
-                className="rounded-md p-5 cursor-pointer transition-all duration-300 hover:shadow-[0_0_15px_rgba(248,237,224,0.1)]"
+                className="rounded-md p-5 cursor-pointer transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                 style={{
                   backgroundColor: "rgba(255, 255, 255, 0.05)",
                   border: selectedAccessOptions.includes("public")
-                    ? "1px solid #f8ede0"
-                    : "1px solid #5d606c",
+                    ? "1px solid oklch(89.9% 0.061 343.231)"
+                    : "1px solid rgba(255, 255, 255, 0.2)",
                 }}
                 onClick={() => toggleAccessOption("public")}
               >
@@ -535,34 +538,32 @@ export default function CreateAgentPage() {
                   <div
                     className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0 mt-1"
                     style={{
-                      backgroundColor: selectedAccessOptions.includes("public")
-                        ? "#f8ede0"
+                      background: selectedAccessOptions.includes("public")
+                        ? 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))'
                         : "transparent",
-                      border: `2px solid ${
-                        selectedAccessOptions.includes("public")
-                          ? "#f8ede0"
-                          : "#5d606c"
-                      }`,
+                      border: selectedAccessOptions.includes("public")
+                        ? 'none'
+                        : '2px solid rgba(255, 255, 255, 0.2)',
                     }}
                   >
                     {selectedAccessOptions.includes("public") && (
                       <Check
                         className="w-4 h-4"
-                        style={{ color: "#161823" }}
+                        style={{ color: "#000000" }}
                       />
                     )}
                   </div>
 
                   <div className="flex-1">
-                    <h4 className="mb-1 font-semibold text-[#f8ede0]">
+                    <h4 className="mb-1 font-semibold text-white">
                       Public (free access)
                     </h4>
-                    <p className="text-sm mb-3 text-[#5d606c]">
+                    <p className="text-sm mb-3" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
                       Anyone can access this agent freely - no payment
                       required.
                     </p>
                     {selectedAccessOptions.includes("public") && (
-                      <p className="text-sm text-[#5d606c]">
+                      <p className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
                         We'll mark this agent as public in the database.
                       </p>
                     )}
@@ -574,12 +575,15 @@ export default function CreateAgentPage() {
             {/* summary chips */}
             {selectedAccessOptions.length > 0 && (
               <div
-                className="mt-6 p-4 rounded-md border border-[#5d606c]"
-                style={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
+                className="mt-6 p-4 rounded-md"
+                style={{ 
+                  backgroundColor: "rgba(255, 255, 255, 0.05)", 
+                  border: '1px solid rgba(255, 255, 255, 0.2)' 
+                }}
               >
-                <div className="text-sm text-[#5d606c]">
+                <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
                   <span className="mr-2">Selected Options:</span>
-                  <span className="text-[#f8ede0] font-medium">
+                  <span className="text-white font-medium">
                     {selectedAccessOptions
                       .map((option) => {
                         const labels = {
@@ -643,31 +647,28 @@ export default function CreateAgentPage() {
 
           {/* main action */}
           <div>
-            <Label className="block mb-3 text-sm font-medium text-[#f8ede0]">
+            <Label className="block mb-3 text-sm font-medium text-white">
               Create Your Agent
             </Label>
 
             <button
               onClick={handleUpload}
               disabled={isUploading}
-              className="w-full h-14 rounded-md text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-14 rounded-md text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg"
               style={{
-                backgroundColor: "#f8ede0",
-                color: "#161823",
-                boxShadow: "0 4px 12px rgba(248, 237, 224, 0.2)",
+                background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
               }}
               onMouseEnter={(e) => {
                 if (!isUploading) {
                   e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow =
-                    "0 6px 16px rgba(248, 237, 224, 0.3)";
+                  e.currentTarget.style.boxShadow = "0 6px 16px rgba(0, 0, 0, 0.2)";
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isUploading) {
                   e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow =
-                    "0 4px 12px rgba(248, 237, 224, 0.2)";
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.1)";
                 }
               }}
             >
@@ -684,20 +685,20 @@ export default function CreateAgentPage() {
           {isUploading && (
             <div className="space-y-3">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#f8ede0]">Saving to database...</span>
-                <span className="text-[#f8ede0] font-medium">
+                <span className="text-white">Saving to database...</span>
+                <span className="text-white font-medium">
                   {uploadProgress}%
                 </span>
               </div>
               <div
                 className="w-full h-2 rounded-full overflow-hidden"
-                style={{ backgroundColor: "#5d606c" }}
+                style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
               >
                 <div
                   className="h-full transition-all duration-300 rounded-full"
                   style={{
                     width: `${uploadProgress}%`,
-                    backgroundColor: "#f8ede0",
+                    background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
                   }}
                 />
               </div>
@@ -707,16 +708,19 @@ export default function CreateAgentPage() {
           {/* final success */}
           {uploadSuccess && (
             <div
-              className="rounded-md p-6 flex flex-col md:flex-row md:items-center md:justify-between border border-[#f8ede0] gap-4"
-              style={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
+              className="rounded-md p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+              style={{ 
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
+                border: '1px solid oklch(89.9% 0.061 343.231)'
+              }}
             >
               <div className="flex items-start gap-3">
-                <Check className="w-6 h-6" style={{ color: "#f8ede0" }} />
+                <Check className="w-6 h-6 text-white" />
                 <div>
-                  <div className="mb-1 text-[#f8ede0] font-medium">
+                  <div className="mb-1 text-white font-medium">
                     Agent created successfully!
                   </div>
-                  <div className="text-sm text-[#5d606c] font-mono break-all">
+                  <div className="text-sm font-mono break-all" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
                     Agent ID: {savedAgentId || "(not returned)"}
                   </div>
                 </div>
@@ -725,15 +729,16 @@ export default function CreateAgentPage() {
               {savedAgentId && (
                 <button
                   onClick={copyToClipboard}
-                  className="px-4 py-2 rounded-md flex items-center gap-2 transition-all duration-300 bg-transparent border border-[#f8ede0] text-[#f8ede0] hover:bg-[#f8ede0] hover:text-[#161823]"
-                  style={
-                    copied
-                      ? {
-                          backgroundColor: "#f8ede0",
-                          color: "#161823",
-                        }
-                      : {}
-                  }
+                  className="px-4 py-2 rounded-md flex items-center gap-2 transition-all duration-300 bg-transparent text-white hover:bg-white hover:bg-opacity-10"
+                  style={{
+                    border: copied 
+                      ? '1px solid oklch(89.9% 0.061 343.231)'
+                      : '1px solid rgba(255, 255, 255, 0.2)',
+                    background: copied 
+                      ? 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))'
+                      : 'transparent',
+                    color: copied ? '#000000' : '#ffffff'
+                  }}
                 >
                   {copied ? (
                     <>
@@ -782,7 +787,7 @@ export default function CreateAgentPage() {
         <h1 className="text-3xl md:text-4xl font-bold mb-2">
           Create Your Agent
         </h1>
-        <p className="text-base md:text-lg text-[#5d606c] mb-6">
+        <p className="text-base md:text-lg mb-6" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
           Upload your AI agent code or model, describe it, set pricing, and
           publish it to the marketplace. We'll save everything in our database.
         </p>
@@ -793,11 +798,17 @@ export default function CreateAgentPage() {
 
       {/* footer help */}
       <div className="max-w-[1400px] mx-auto px-6 py-6 text-center">
-        <span className="text-[#5d606c]">
+        <span style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
           Need help?{" "}
           <a
             href="#"
-            className="text-[#f8ede0] hover:underline transition-all"
+            className="text-white hover:underline transition-all"
+            style={{
+              background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}
           >
             Visit Support
           </a>
