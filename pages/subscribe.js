@@ -139,13 +139,7 @@ export default function SubscribePage() {
               className="relative rounded-2xl p-8 transition-all duration-300"
               style={{
                 background: "rgba(255, 255, 255, 0.05)",
-                border: plan.popular
-                  ? "2px solid transparent"
-                  : "1px solid rgba(255, 255, 255, 0.1)",
-                backgroundImage: plan.popular
-                  ? `linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)), ${plan.gradient}`
-                  : "none",
-                backgroundClip: plan.popular ? "padding-box, border-box" : "border-box",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-4px)";
