@@ -1,11 +1,34 @@
 import { gptAgent } from './agents/gptAgent.js';
 import { calendarAgent } from './agents/calendarAgent.js';
-import { eventParser } from './agents/eventParser.js';
 import { emailAgent, createCalendarButton, createCalendarLink } from './agents/emailAgent.js';
-import { emailParser } from './agents/emailParser.js';
 import { invoiceAgent } from './agents/invoiceAgent.js';
-import { invoiceParser } from './agents/invoiceParser.js';
-import { paymentAgent, createPaymentLink, createHTMLEmailWithButton, createPaymentButton } from './agents/paymentAgent.js';
+import { unifiedParser } from './utils/unifiedParser.js';
+import {
+  EVENT_SCHEMA, EVENT_PARSER_OPTIONS,
+  INVOICE_SCHEMA, INVOICE_PARSER_OPTIONS,
+  EMAIL_SCHEMA, EMAIL_PARSER_OPTIONS
+} from './utils/schemas.js';
+// Lazy load payment agent only when needed (stripe package is optional)
+let paymentAgent, createPaymentLink, createHTMLEmailWithButton, createPaymentButton;
+async function loadPaymentAgent() {
+  if (!paymentAgent) {
+    try {
+      const paymentModule = await import('./agents/paymentAgent.js');
+      paymentAgent = paymentModule.paymentAgent;
+      createPaymentLink = paymentModule.createPaymentLink;
+      createHTMLEmailWithButton = paymentModule.createHTMLEmailWithButton;
+      createPaymentButton = paymentModule.createPaymentButton;
+    } catch (error) {
+      console.warn('[Coordinator] Payment agent not available (stripe package not installed)');
+      // Create stub functions
+      paymentAgent = async () => { throw new Error('Stripe package not installed. Run: npm install stripe'); };
+      createPaymentLink = () => '';
+      createHTMLEmailWithButton = (body) => body;
+      createPaymentButton = () => '';
+    }
+  }
+  return { paymentAgent, createPaymentLink, createHTMLEmailWithButton, createPaymentButton };
+}
 
 /**
  * Agent Coordinator - Orchestrates multiple agents to fulfill user requests
@@ -18,30 +41,78 @@ export class AgentCoordinator {
   }
 
   /**
+   * Detect actions without executing (for confirmation step)
+   * @param {string} userPrompt - User's request
+   * @returns {Promise<Object>} Detected actions info
+   */
+  async detectActions(userPrompt) {
+    const actionTypes = this.detectRequestTypes(userPrompt);
+    
+    const actionDescriptions = {
+      calendar: 'Schedule calendar event',
+      email: 'Send email',
+      invoice: 'Create invoice',
+      payment: 'Generate payment link',
+      general: 'General response'
+    };
+    
+    const detectedActions = actionTypes
+      .filter(type => type !== 'general')
+      .map(type => ({
+        type,
+        description: actionDescriptions[type] || type
+      }));
+    
+    return {
+      hasActions: detectedActions.length > 0,
+      actions: detectedActions,
+      actionTypes: actionTypes
+    };
+  }
+
+  /**
    * Process user request and coordinate appropriate agents
    * @param {string} userPrompt - User's request
+   * @param {boolean} executeMode - If false, only detect actions. If true, execute them.
    * @returns {Promise<Object>} Coordinated result from all agents
    */
-  async processRequest(userPrompt) {
+  async processRequest(userPrompt, executeMode = true) {
     this.results = {
       message: '',
       calendar: null,
       email: null,
       invoice: null,
       payment: null,
-      actions: []
+      actions: [],
+      logs: [], // Store backend processing logs for frontend display
+      statusUpdates: [] // Store status updates for frontend progress display
     };
 
     // Detect what types of requests this is (can be multiple)
     const actionTypes = this.detectRequestTypes(userPrompt);
     this.actionTypes = actionTypes; // Store as instance variable for use in other methods
+    
+    // If not in execute mode, return detection results
+    if (!executeMode) {
+      return this.detectActions(userPrompt);
+    }
+    
+    this.results.logs.push({ 
+      timestamp: new Date().toISOString(), 
+      message: `[Coordinator] Detected action types: ${actionTypes.join(', ')}` 
+    });
+    this.addStatusUpdate('Content generated', 'success');
     console.log(`[Coordinator] Detected action types: ${actionTypes.join(', ')}`);
 
     // Process actions in logical order (create resources first, then send notifications)
     
     // 1. Handle invoice requests first (creates files that might be needed for email)
     if (actionTypes.includes('invoice')) {
+      this.addStatusUpdate('Creating invoice...', 'progress');
       await this.handleInvoiceRequest(userPrompt);
+      if (this.results.invoice?.status === 'CREATED') {
+        this.addStatusUpdate('Invoice created', 'success');
+      }
     }
     
     // 2. Handle payment requests - Auto-create when invoice + email detected OR explicitly requested
@@ -49,23 +120,48 @@ export class AgentCoordinator {
                                (actionTypes.includes('invoice') && actionTypes.includes('email'));
     
     if (shouldCreatePayment && this.results.invoice?.status === 'CREATED') {
+      this.addStatusUpdate('Generating payment link...', 'progress');
       await this.handlePaymentRequest(userPrompt);
+      if (this.results.payment?.checkoutUrl) {
+        this.addStatusUpdate('Payment link generated', 'success');
+      }
     }
     
     // 3. Handle calendar requests
     if (actionTypes.includes('calendar')) {
+      this.addStatusUpdate('Creating calendar event...', 'progress');
       await this.handleCalendarRequest(userPrompt);
+      if (this.results.calendar?.status === 'CREATED') {
+        this.addStatusUpdate('Calendar event created', 'success');
+      }
     }
     
     // 4. Handle email requests last (might include attachments + payment links)
     if (actionTypes.includes('email')) {
+      this.addStatusUpdate('Sending email...', 'progress');
       await this.handleEmailRequest(userPrompt);
+      if (this.results.email?.status === 'SENT') {
+        this.addStatusUpdate('Email sent', 'success');
+      }
     }
 
     // Always get GPT response (with context about actions taken)
     await this.handleGPTResponse(userPrompt);
 
     return this.results;
+  }
+
+  /**
+   * Add status update for frontend progress tracking
+   * @param {string} message - Status message
+   * @param {string} status - Status type: 'pending', 'progress', 'success', 'error'
+   */
+  addStatusUpdate(message, status = 'progress') {
+    this.results.statusUpdates.push({
+      message,
+      status,
+      timestamp: new Date().toISOString()
+    });
   }
 
   /**
@@ -118,11 +214,21 @@ export class AgentCoordinator {
    */
   async handleCalendarRequest(userPrompt) {
     try {
-      console.log('[Coordinator] Processing calendar request...');
+      const log = (msg, data = null) => {
+        console.log(msg);
+        this.results.logs.push({ timestamp: new Date().toISOString(), message: msg, data });
+      };
       
-      // Parse event details from natural language
-      const eventDetails = await eventParser(userPrompt);
-      console.log('[Coordinator] Parsed event:', eventDetails);
+      log('[Coordinator] Processing calendar request...');
+      
+      // Parse event details from natural language using unified parser
+      const eventDetails = await unifiedParser(
+        userPrompt,
+        EVENT_SCHEMA,
+        'calendar event',
+        EVENT_PARSER_OPTIONS
+      );
+      log('[Coordinator] Parsed event:', eventDetails);
 
       // Create calendar event
       const calendarResult = await calendarAgent({
@@ -140,10 +246,16 @@ export class AgentCoordinator {
         result: calendarResult
       });
       
-      console.log('[Coordinator] ✅ Calendar event created');
+      log('[Coordinator] ✅ Calendar event created');
 
     } catch (error) {
       console.error('[Coordinator] Calendar error:', error.message);
+      
+      this.results.logs.push({ 
+        timestamp: new Date().toISOString(), 
+        message: `[Coordinator] ❌ Calendar error: ${error.message}`, 
+        level: 'error' 
+      });
       
       if (error.needAuth) {
         this.results.calendar = {
@@ -173,11 +285,21 @@ export class AgentCoordinator {
    */
   async handleEmailRequest(userPrompt) {
     try {
-      console.log('[Coordinator] Processing email request...');
+      const log = (msg, data = null) => {
+        console.log(msg);
+        this.results.logs.push({ timestamp: new Date().toISOString(), message: msg, data });
+      };
       
-      // Parse email details from natural language
-      const emailDetails = await emailParser(userPrompt);
-      console.log('[Coordinator] Parsed email:', emailDetails);
+      log('[Coordinator] Processing email request...');
+      
+      // Parse email details from natural language using unified parser
+      const emailDetails = await unifiedParser(
+        userPrompt,
+        EMAIL_SCHEMA,
+        'email',
+        EMAIL_PARSER_OPTIONS
+      );
+      log('[Coordinator] Parsed email:', emailDetails);
 
       // Check if we should attach an invoice file
       let attachmentPath = null;
@@ -301,8 +423,13 @@ export class AgentCoordinator {
     try {
       console.log('[Coordinator] Processing invoice request...');
       
-      // Parse invoice details from natural language
-      const invoiceDetails = await invoiceParser(userPrompt);
+      // Parse invoice details from natural language using unified parser
+      const invoiceDetails = await unifiedParser(
+        userPrompt,
+        INVOICE_SCHEMA,
+        'invoice',
+        INVOICE_PARSER_OPTIONS
+      );
       console.log('[Coordinator] Parsed invoice:', invoiceDetails);
 
       // Create invoice
@@ -363,8 +490,11 @@ export class AgentCoordinator {
         customerEmail = emailMatch[0];
       }
 
+      // Load payment agent
+      const { paymentAgent: payAgent } = await loadPaymentAgent();
+      
       // Create payment session
-      const paymentResult = await paymentAgent({
+      const paymentResult = await payAgent({
         amount: invoice.amount,
         description: `${invoice.serviceDescription} - ${invoice.clientName}`,
         customerEmail: customerEmail,
@@ -427,6 +557,10 @@ export class AgentCoordinator {
       const gptResponse = await gptAgent(userPrompt, systemContext);
       this.results.message = gptResponse;
       
+      this.results.logs.push({ 
+        timestamp: new Date().toISOString(), 
+        message: '[Coordinator] ✅ GPT response generated' 
+      });
       console.log('[Coordinator] ✅ GPT response generated');
 
     } catch (error) {
@@ -512,7 +646,7 @@ export class AgentCoordinator {
           Click the button below to securely complete your payment through Stripe.
         </p>
         
-        ${createPaymentButton(payment.checkoutUrl, payment.amount)}
+        ${createPaymentButton ? createPaymentButton(payment.checkoutUrl, payment.amount) : `<a href="${payment.checkoutUrl}" style="display: inline-block; background-color: #635BFF; color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;">💳 Pay RM${payment.amount} Now</a>`}
       </div>`;
     }
 
@@ -582,8 +716,8 @@ export class AgentCoordinator {
  * @param {string} userId - User identifier
  * @returns {Promise<Object>} Coordinated result
  */
-export async function coordinateAgents(userPrompt, userId = 'demoUser') {
+export async function coordinateAgents(userPrompt, userId = 'demoUser', executeMode = true) {
   const coordinator = new AgentCoordinator(userId);
-  return await coordinator.processRequest(userPrompt);
+  return await coordinator.processRequest(userPrompt, executeMode);
 }
 
