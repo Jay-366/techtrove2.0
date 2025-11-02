@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bot, Search, Plus, Settings, Info, Calendar, Sparkles, MessageCircle, ChevronDown, Menu, X, Clock, Check, AlertCircle } from 'lucide-react';
+import { Bot, Search, Plus, Settings, Info, Calendar, Sparkles, MessageCircle, ChevronDown, Mail, FileText, CreditCard, Check, Clock, AlertCircle, Menu, X } from 'lucide-react';
 import { useAIBoxChat } from '../lib/useAIBoxChat';
 import SplitText from '../components/SplitText';
 import { PromptInputBox } from '../components/ai-prompt-box';
@@ -690,9 +690,9 @@ export default function ChatPage() {
                                   return <CreditCard {...iconProps} />;
                                 case 'MessageCircle':
                                   return <MessageCircle {...iconProps} />;
-                                // default:
-                                //   console.warn(`[Chat] ⚠️ USING DEFAULT ICON! iconName was: "${iconName}"`);
-                                //   return <Settings {...iconProps} />;
+                                default:
+                                  console.warn(`[Chat] ⚠️ USING DEFAULT ICON! iconName was: "${iconName}"`);
+                                  return <Settings {...iconProps} />;
                               }
                             };
 
