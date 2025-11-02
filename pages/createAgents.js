@@ -23,10 +23,8 @@ export default function CreateAgentPage() {
   const [selectedFiles, setSelectedFiles] = useState([]);
 
   // access / pricing
-  const [selectedAccessOptions, setSelectedAccessOptions] = useState([]);
-  const [monthlyTokens, setMonthlyTokens] = useState("");
+  const [selectedAccessOption, setSelectedAccessOption] = useState("");
   const [tokensPerQuery, setTokensPerQuery] = useState("");
-  const [isPublic, setIsPublic] = useState(false);
 
   // UI state
   const [isUploading, setIsUploading] = useState(false);
@@ -77,18 +75,13 @@ export default function CreateAgentPage() {
     };
   }, []);
 
-  const toggleAccessOption = (option) => {
-    setSelectedAccessOptions((prev) => {
-      // "public" is special: we also reflect it in isPublic
-      if (option === "public") {
-        const nextPublic = !prev.includes("public");
-        setIsPublic(nextPublic);
-      }
-
-      return prev.includes(option)
-        ? prev.filter((item) => item !== option)
-        : [...prev, option];
-    });
+  const selectAccessOption = (option) => {
+    // For radio behavior - if clicking the same option, deselect it, otherwise select the new one
+    if (selectedAccessOption === option) {
+      setSelectedAccessOption("");
+    } else {
+      setSelectedAccessOption(option);
+    }
   };
 
   // form validation
@@ -111,24 +104,16 @@ export default function CreateAgentPage() {
     if (selectedFiles.length === 0) {
       errors.push("Please upload at least one file.");
     }
-    if (selectedAccessOptions.length === 0) {
-      errors.push("Please select at least one access option.");
-    }
-
-    // subscribers option requires monthlyTokens
-    if (
-      selectedAccessOptions.includes("subscribers") &&
-      !monthlyTokens.trim()
-    ) {
-      errors.push("Monthly tokens are required for Subscribers option.");
+    if (!selectedAccessOption) {
+      errors.push("Please select an access option.");
     }
 
     // pay-per-use option requires tokensPerQuery
     if (
-      selectedAccessOptions.includes("payperuse") &&
+      selectedAccessOption === "payperuse" &&
       !tokensPerQuery.trim()
     ) {
-      errors.push("Tokens per query is required for Pay-Per-Use option.");
+      errors.push("Tokens per query is required for Token-Based Pricing option.");
     }
 
     setValidationErrors(errors);
@@ -154,13 +139,8 @@ export default function CreateAgentPage() {
       formData.append("category", category);
       formData.append("description", description);
 
-      formData.append(
-        "accessOptions",
-        JSON.stringify(selectedAccessOptions)
-      );
-      formData.append("monthlyTokens", monthlyTokens || "");
+      formData.append("accessOption", selectedAccessOption);
       formData.append("tokensPerQuery", tokensPerQuery || "");
-      formData.append("isPublic", isPublic ? "true" : "false");
 
       if (address) {
         formData.append("ownerAddress", address);
@@ -402,127 +382,46 @@ export default function CreateAgentPage() {
             </Label>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Subscribers */}
-              <div
-                className="rounded-md p-5 cursor-pointer transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
-                style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.05)",
-                  border: selectedAccessOptions.includes("subscribers")
-                    ? "1px solid oklch(89.9% 0.061 343.231)"
-                    : "1px solid rgba(255, 255, 255, 0.2)",
-                }}
-                onClick={() => toggleAccessOption("subscribers")}
-              >
-                <div className="flex items-start gap-4">
-                  {/* checkbox visual */}
-                  <div
-                    className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0 mt-1"
-                    style={{
-                      background: selectedAccessOptions.includes("subscribers")
-                        ? 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))'
-                        : "transparent",
-                      border: selectedAccessOptions.includes("subscribers")
-                        ? 'none'
-                        : '2px solid rgba(255, 255, 255, 0.2)',
-                    }}
-                  >
-                    {selectedAccessOptions.includes("subscribers") && (
-                      <Check
-                        className="w-4 h-4"
-                        style={{ color: "#000000" }}
-                      />
-                    )}
-                  </div>
-
-                  <div className="flex-1">
-                    <h4 className="mb-1 font-semibold text-white">
-                      Subscribers (monthly tokens)
-                    </h4>
-                    <p className="text-sm mb-3" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-                      Users get monthly tokens to query this agent.
-                    </p>
-
-                    {selectedAccessOptions.includes("subscribers") && (
-                      <div
-                        onClick={(e) => e.stopPropagation()}
-                        className="space-y-4"
-                      >
-                        {/* Monthly tokens */}
-                        <div className="relative" style={{ width: "200px" }}>
-                          <Input
-                            type="text"
-                            value={monthlyTokens}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(
-                                /[^0-9]/g,
-                                ""
-                              );
-                              setMonthlyTokens(value);
-                            }}
-                            className="h-11 bg-transparent text-white placeholder-transparent peer w-full"
-                            style={{ border: '1px solid rgba(255, 255, 255, 0.2)' }}
-                          />
-                          <Label className={`absolute left-4 transition-all duration-200 pointer-events-none ${
-                            monthlyTokens && monthlyTokens.trim() !== ''
-                              ? '-top-2 text-xs text-white bg-black px-1'
-                              : 'top-3 text-sm peer-focus:-top-2 peer-focus:text-xs peer-focus:text-white peer-focus:bg-black peer-focus:px-1'
-                          }`} style={{ color: monthlyTokens && monthlyTokens.trim() !== '' ? '#ffffff' : 'rgba(255, 255, 255, 0.6)' }}>
-                            Monthly Tokens
-                          </Label>
-                          <p className="mt-2 text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-                            Tokens users get monthly for queries (e.g., 10000).
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
               {/* Pay Per Use */}
               <div
                 className="rounded-md p-5 cursor-pointer transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                 style={{
                   backgroundColor: "rgba(255, 255, 255, 0.05)",
-                  border: selectedAccessOptions.includes("payperuse")
+                  border: selectedAccessOption === "payperuse"
                     ? "1px solid oklch(89.9% 0.061 343.231)"
                     : "1px solid rgba(255, 255, 255, 0.2)",
                 }}
-                onClick={() => toggleAccessOption("payperuse")}
+                onClick={() => selectAccessOption("payperuse")}
               >
                 <div className="flex items-start gap-4">
-                  {/* checkbox visual */}
+                  {/* radio visual */}
                   <div
-                    className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0 mt-1"
+                    className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1"
                     style={{
-                      backgroundColor: selectedAccessOptions.includes(
-                        "payperuse"
-                      )
+                      backgroundColor: selectedAccessOption === "payperuse"
                         ? "oklch(89.9% 0.061 343.231)"
                         : "transparent",
                       border: `2px solid ${
-                        selectedAccessOptions.includes("payperuse")
+                        selectedAccessOption === "payperuse"
                           ? "oklch(89.9% 0.061 343.231)"
                           : "rgba(255, 255, 255, 0.3)"
                       }`,
                     }}
                   >
-                    {selectedAccessOptions.includes("payperuse") && (
-                      <Check
-                        className="w-4 h-4 text-black"
-                      />
+                    {selectedAccessOption === "payperuse" && (
+                      <div className="w-3 h-3 rounded-full bg-black" />
                     )}
                   </div>
 
                   <div className="flex-1">
                     <h4 className="mb-1 font-semibold text-white">
-                      Pay-Per-Query (token-based)
+                      Token-Based Pricing
                     </h4>
                     <p className="text-sm mb-3" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-                      Users pay tokens each time they query this agent.
+                      Set how much users pay per query in tokens (100 tokens = $1).
                     </p>
 
-                    {selectedAccessOptions.includes("payperuse") && (
+                    {selectedAccessOption === "payperuse" && (
                       <div className="relative" onClick={(e) => e.stopPropagation()} style={{ width: "200px" }}>
                         <Input
                           type="text"
@@ -545,7 +444,7 @@ export default function CreateAgentPage() {
                           Tokens Per Query
                         </Label>
                         <p className="mt-2 text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-                          Tokens required per query (e.g., 100).
+                          Enter number of tokens required per query (e.g., 100).
                         </p>
                       </div>
                     )}
@@ -558,30 +457,29 @@ export default function CreateAgentPage() {
                 className="rounded-md p-5 cursor-pointer transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                 style={{
                   backgroundColor: "rgba(255, 255, 255, 0.05)",
-                  border: selectedAccessOptions.includes("public")
+                  border: selectedAccessOption === "public"
                     ? "1px solid oklch(89.9% 0.061 343.231)"
                     : "1px solid rgba(255, 255, 255, 0.2)",
                 }}
-                onClick={() => toggleAccessOption("public")}
+                onClick={() => selectAccessOption("public")}
               >
                 <div className="flex items-start gap-4">
-                  {/* checkbox visual */}
+                  {/* radio visual */}
                   <div
-                    className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0 mt-1"
+                    className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1"
                     style={{
-                      background: selectedAccessOptions.includes("public")
-                        ? 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))'
+                      backgroundColor: selectedAccessOption === "public"
+                        ? "oklch(89.9% 0.061 343.231)"
                         : "transparent",
-                      border: selectedAccessOptions.includes("public")
-                        ? 'none'
-                        : '2px solid rgba(255, 255, 255, 0.2)',
+                      border: `2px solid ${
+                        selectedAccessOption === "public"
+                          ? "oklch(89.9% 0.061 343.231)"
+                          : "rgba(255, 255, 255, 0.3)"
+                      }`,
                     }}
                   >
-                    {selectedAccessOptions.includes("public") && (
-                      <Check
-                        className="w-4 h-4"
-                        style={{ color: "#000000" }}
-                      />
+                    {selectedAccessOption === "public" && (
+                      <div className="w-3 h-3 rounded-full bg-black" />
                     )}
                   </div>
 
@@ -590,21 +488,15 @@ export default function CreateAgentPage() {
                       Public (free access)
                     </h4>
                     <p className="text-sm mb-3" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-                      Anyone can access this agent freely - no payment
-                      required.
+                      Anyone can access this agent freely - no payment required.
                     </p>
-                    {selectedAccessOptions.includes("public") && (
-                      <p className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-                        We'll mark this agent as public in the database.
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>
             </div>
 
             {/* summary chips */}
-            {selectedAccessOptions.length > 0 && (
+            {selectedAccessOption && (
               <div
                 className="mt-6 p-4 rounded-md"
                 style={{ 
@@ -613,18 +505,9 @@ export default function CreateAgentPage() {
                 }}
               >
                 <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-                  <span className="mr-2">Selected Options:</span>
+                  <span className="mr-2">Selected Option:</span>
                   <span className="text-white font-medium">
-                    {selectedAccessOptions
-                      .map((option) => {
-                        const labels = {
-                          subscribers: "Subscribers",
-                          payperuse: "Pay-Per-Use",
-                          public: "Public",
-                        };
-                        return labels[option] || option;
-                      })
-                      .join(", ")}
+                    {selectedAccessOption === "payperuse" ? "Token-Based Pricing" : "Public Access"}
                   </span>
                 </div>
               </div>

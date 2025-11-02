@@ -91,9 +91,8 @@ export const AgentCard = ({
         {/* divider */}
         <div className="my-3 h-px w-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }} />
 
-        {/* tags + price */}
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex flex-wrap gap-2">
+        {/* tags */}
+        <div className="flex flex-wrap items-center gap-2">
             {tags.map((tag) => (
               <span
                 key={tag}
@@ -104,44 +103,6 @@ export const AgentCard = ({
               </span>
             ))}
           </div>
-          <span className="whitespace-nowrap text-base font-semibold" style={{ 
-            background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
-          }}>
-            {price}
-          </span>
-        </div>
-
-        {/* Deploy button */}
-        <button
-          className="mt-4 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-black"
-          style={{
-            background: "linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "translateY(-2px)";
-            e.currentTarget.style.boxShadow =
-              "0 8px 16px rgba(255, 255, 255, 0.3)";
-            e.currentTarget.style.opacity = "0.9";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow = "none";
-            e.currentTarget.style.opacity = "1";
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (onDeploy) {
-              onDeploy();
-            } else {
-              router.push(`/agents/${id}`);
-            }
-          }}
-        >
-          Deploy Agent
-        </button>
       </div>
     </div>
   );

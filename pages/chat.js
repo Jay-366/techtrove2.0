@@ -152,7 +152,7 @@ export default function ChatPage() {
             className="absolute left-0 top-0 bottom-0 flex flex-col animate-slide-in-left"
             style={{
               width: '280px',
-              backgroundColor: '#0a0a0a',
+              backgroundColor: '#000000',
               borderRight: '1px solid rgba(255, 255, 255, 0.1)',
             }}
             onClick={(e) => e.stopPropagation()}
@@ -234,7 +234,7 @@ export default function ChatPage() {
         style={{
           width: '280px',
           minWidth: '280px',
-          backgroundColor: '#0a0a0a',
+          backgroundColor: '#000000',
           borderRight: '1px solid rgba(255, 255, 255, 0.1)',
         }}
       >
@@ -437,7 +437,7 @@ export default function ChatPage() {
           className="flex items-center justify-between px-3 md:px-6"
           style={{
             height: '60px',
-            backgroundColor: '#0a0a0a',
+            backgroundColor: '#000000',
             borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           }}
         >

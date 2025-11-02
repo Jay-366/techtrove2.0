@@ -3,23 +3,17 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   Plus,
-  Sparkles,
-  Wrench,
   SlidersHorizontal,
   ArrowUpDown,
   Search,
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { TradingOracleCard } from "@/components/agents/TradingOracleCard";
 import { CreatedAgentCard } from "@/components/agents/CreatedAgentCard";
-import { Toggle, ToggleButtonGroup } from "@/components/agents/toggle-group";
 import { Slider } from "@/components/ui/slider";
 import Navigation from "@/components/Navigation";
 
 export default function MyAgentsPage() {
-  // "subscribed" | "created"
-  const [activeTab, setActiveTab] = useState("created");
 
   const [searchQuery, setSearchQuery] = useState("");
   // "name" | "price" | "rating" | "users" | "revenue"
@@ -94,64 +88,6 @@ export default function MyAgentsPage() {
     };
   }, []);
 
-  // mock data: subscribed agents
-  const subscribedAgents = [
-    {
-      id: 1,
-      name: "Trading Oracle",
-      creator: "AI Systems Inc",
-      role: "Trading Agent",
-      category: "Trading",
-      description:
-        "I'm providing advanced market analysis and trading strategies quickly and professionally. I'll be happy to help you with your trading.",
-      rating: 4.8,
-      reviews: 21,
-      users: 12500,
-      price: 1000,
-      experience: "2 years exp",
-      workType: "Project work",
-      expiry: "Expires in 14 days",
-      avatar: "🤖",
-      trending: true,
-    },
-    {
-      id: 2,
-      name: "Research Assistant",
-      creator: "Data Labs",
-      role: "Research Agent",
-      category: "Research",
-      description:
-        "I'm conducting AI-powered research and data analysis quickly and professionally. I'll be happy to help you with your research project.",
-      rating: 4.9,
-      reviews: 18,
-      users: 8300,
-      price: 500,
-      experience: "3 years exp",
-      workType: "Hourly work",
-      expiry: "Expires in 7 days",
-      avatar: "📊",
-      trending: true,
-    },
-    {
-      id: 3,
-      name: "Content Writer Pro",
-      creator: "Creative AI",
-      role: "Content Agent",
-      category: "Writing",
-      description:
-        "I'm creating high-quality content and professional writing quickly and efficiently. I'll be happy to help you with your content needs.",
-      rating: 4.7,
-      reviews: 25,
-      users: 15200,
-      price: 750,
-      experience: "4 years exp",
-      workType: "Project work",
-      expiry: "Expires in 30 days",
-      avatar: "✍️",
-      trending: true,
-    },
-  ];
-
   // mock data: created agents
   const baseCreatedAgents = [
     {
@@ -204,7 +140,7 @@ export default function MyAgentsPage() {
   // categories for filter
   const allCategories = Array.from(
     new Set(
-      [...subscribedAgents, ...createdAgents].map(
+      createdAgents.map(
         (agent) => agent.category
       )
     )
@@ -212,7 +148,7 @@ export default function MyAgentsPage() {
 
   // filtered + sorted list
   const filteredAndSortedAgents = useMemo(() => {
-    const list = activeTab === "subscribed" ? subscribedAgents : createdAgents;
+    const list = createdAgents;
 
     // search filter
     let filtered = list.filter(
@@ -277,8 +213,6 @@ export default function MyAgentsPage() {
 
     return sorted;
   }, [
-    activeTab,
-    subscribedAgents,
     createdAgents,
     searchQuery,
     selectedCategories,
@@ -353,48 +287,15 @@ export default function MyAgentsPage() {
         </p>
 
         {/* tab + actions row */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          {/* tab toggle */}
-          <ToggleButtonGroup
-            selectionMode="single"
-            selectedKeys={[activeTab]}
-            onSelectionChange={(keys) => {
-              const selected = Array.from(keys)[0];
-              if (selected) setActiveTab(selected);
-            }}
-          >
-            <Toggle
-              id="created"
-              variant="outline"
-              size="default"
-              className="gap-2"
-            >
-              <Wrench className="w-4 h-4" />
-              <span>Created Agents</span>
-              <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[#f8ede0]/10 text-[10px] font-semibold">
-                {createdAgents.length}
-              </span>
-            </Toggle>
-
-            <Toggle
-              id="subscribed"
-              variant="outline"
-              size="default"
-              className="gap-2"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Subscribed Agents</span>
-              <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[#f8ede0]/10 text-[10px] font-semibold">
-                {subscribedAgents.length}
-              </span>
-            </Toggle>
-          </ToggleButtonGroup>
-
+        <div className="flex flex-wrap items-center gap-4">
           {/* right side controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-grow items-center gap-2">
             {/* search bar */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" style={{ color: 'rgba(255, 255, 255, 0.6)' }} />
+            <div className="relative flex flex-grow items-center rounded-md border px-3 py-2 h-10 transition-all duration-300" style={{
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)'
+            }}>
+              <Search className="w-4 h-4 mr-2" style={{ color: 'rgba(255, 255, 255, 0.6)' }} />
               <input
                 type="text"
                 placeholder="Search agents..."
@@ -402,25 +303,20 @@ export default function MyAgentsPage() {
                 onChange={(e) =>
                   setSearchQuery(e.target.value)
                 }
-                className="pl-9 pr-9 py-2 h-10 rounded-md border bg-transparent text-sm text-white focus:outline-none transition-all duration-300"
-                style={{ 
-                  width: "200px",
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)'
-                }}
+                className="flex-grow bg-transparent outline-none text-sm text-white"
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor = 'oklch(89.9% 0.061 343.231)';
-                  e.currentTarget.style.boxShadow = '0 0 15px rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.parentElement.style.borderColor = 'oklch(89.9% 0.061 343.231)';
+                  e.currentTarget.parentElement.style.boxShadow = '0 0 15px rgba(255, 255, 255, 0.1)';
                 }}
                 onBlur={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.parentElement.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                  e.currentTarget.parentElement.style.boxShadow = 'none';
                 }}
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors hover:text-white"
+                  className="transition-colors hover:text-white"
                   style={{ color: 'rgba(255, 255, 255, 0.6)' }}
                 >
                   <X className="w-4 h-4" />
@@ -654,80 +550,6 @@ export default function MyAgentsPage() {
 
       {/* content */}
       <div className="max-w-[1400px] mx-auto px-6 py-8">
-        {/* subscribed tab */}
-        {activeTab === "subscribed" && (
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2
-                  className="text-xl font-semibold text-white"
-                >
-                  Your <span style={{ 
-                    background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text'
-                  }}>Subscriptions</span>
-                </h2>
-                <p
-                  className="text-sm"
-                  style={{ color: 'rgba(255, 255, 255, 0.6)' }}
-                >
-                  {filteredAndSortedAgents.length} of{" "}
-                  {subscribedAgents.length} agents
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {filteredAndSortedAgents.map((agent) => (
-                <TradingOracleCard
-                  key={agent.id}
-                  title={agent.name}
-                  category={agent.category}
-                  description={agent.description}
-                  price={agent.price}
-                  pricePeriod="tokens/query"
-                  rating={agent.rating}
-                  users={agent.users}
-                  trending={agent.trending}
-                  onViewDetails={() =>
-                    handleAgentSelect(agent)
-                  }
-                  variant="glass"
-                  size="md"
-                  hover="lift"
-                  revealOnHover={true}
-                />
-              ))}
-            </div>
-
-            {filteredAndSortedAgents.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-lg" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-                  No agents found matching your criteria.
-                </p>
-                <button
-                  onClick={() => {
-                    setSearchQuery("");
-                    setSelectedCategories([]);
-                    setPriceRange([100, 2000]);
-                  }}
-                  className="mt-4 px-6 py-2 rounded-md border text-sm transition-all hover:bg-white hover:bg-opacity-10"
-                  style={{ 
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    color: 'rgba(255, 255, 255, 0.6)'
-                  }}
-                >
-                  Clear all filters
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* created tab */}
-        {activeTab === "created" && (
           <div>
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -880,7 +702,6 @@ export default function MyAgentsPage() {
               </div>
             )}
           </div>
-        )}
       </div>
     </div>
   );
