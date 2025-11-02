@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { Bot, Search, Plus, Settings, Info, Calendar, Sparkles, MessageCircle, ChevronDown } from 'lucide-react';
+import Link from 'next/link';
+import { Bot, Search, Plus, Settings, Info, Calendar, Sparkles, MessageCircle, ChevronDown, Menu, X } from 'lucide-react';
 import { useAIBoxChat } from '../lib/useAIBoxChat';
 import SplitText from '../components/SplitText';
 import { PromptInputBox } from '../components/ai-prompt-box';
@@ -36,6 +37,7 @@ export default function ChatPage() {
   const [selectedAgent, setSelectedAgent] = useState('ai-agent');
   const [showInfoDrawer, setShowInfoDrawer] = useState(false);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const [showLeftMenu, setShowLeftMenu] = useState(false);
   const { messages, send, pending, error, clearMessages, confirmingAction, executeConfirmed } = useAIBoxChat();
   const messagesContainerRef = useRef(null);
 
@@ -114,6 +116,14 @@ export default function ChatPage() {
     }
   };
 
+  const navItems = [
+    { href: '/agents', label: 'My Agents' },
+    { href: '/marketplace', label: 'Marketplace' },
+    { href: '/createAgents', label: 'Create Agent' },
+    { href: '/chat', label: 'Chat' },
+    { href: '/subscribe', label: 'Subscribe' },
+  ];
+
   return (
     <div
       className="flex"
@@ -129,6 +139,95 @@ export default function ChatPage() {
         padding: 0,
       }}
     >
+      {/* Left Menu Overlay */}
+      {showLeftMenu && (
+        <div
+          className="fixed inset-0 z-50 animate-fade-in"
+          onClick={() => setShowLeftMenu(false)}
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}
+        >
+          <div
+            className="absolute left-0 top-0 bottom-0 flex flex-col animate-slide-in-left"
+            style={{
+              width: '280px',
+              backgroundColor: '#0a0a0a',
+              borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Menu Header */}
+            <div
+              className="flex items-center justify-between px-4"
+              style={{
+                height: '60px',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              }}
+            >
+              <Link href="/" onClick={() => setShowLeftMenu(false)}>
+                <div className="flex items-center gap-2 cursor-pointer">
+                  <Image
+                    src="/intellibox.png"
+                    alt="AIBox Logo"
+                    width={28}
+                    height={28}
+                    style={{
+                      objectFit: 'contain',
+                    }}
+                  />
+                  <span style={{ color: '#FBede0', fontSize: '16px', fontWeight: 600 }}>
+                    IntelliBox
+                  </span>
+                </div>
+              </Link>
+              <button
+                onClick={() => setShowLeftMenu(false)}
+                className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200"
+                style={{ backgroundColor: 'transparent' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(80, 96, 108, 0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
+              >
+                <X
+                  className="w-5 h-5"
+                  style={{ color: 'rgba(251, 237, 224, 0.8)' }}
+                />
+              </button>
+            </div>
+
+            {/* Navigation Items */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="space-y-2">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setShowLeftMenu(false)}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200"
+                    style={{
+                      backgroundColor: 'transparent',
+                      color: 'rgba(251, 237, 224, 0.8)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(80, 96, 108, 0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                  >
+                    <span className="text-sm font-medium">{item.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar - Agent List */}
       <div
         className="hidden md:flex flex-col"
@@ -139,26 +238,36 @@ export default function ChatPage() {
           borderRight: '1px solid rgba(255, 255, 255, 0.1)',
         }}
       >
-        {/* Sidebar Header - Logo Row */}
+        {/* Sidebar Header - Menu Row */}
         <div
-          className="flex items-center gap-2 px-4"
+          className="flex items-center justify-between px-4"
           style={{
             height: '60px',
           }}
         >
-          <Image
-            src="/intellibox.png"
-            alt="AIBox Logo"
-            width={28}
-            height={28}
-            style={{
-              objectFit: 'contain',
+          <button
+            onClick={() => setShowLeftMenu(!showLeftMenu)}
+            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200"
+            style={{ backgroundColor: 'transparent' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(80, 96, 108, 0.3)';
             }}
-          />
-          <h2
-            style={{ color: '#FBede0', fontSize: '16px', fontWeight: 600 }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
           >
-          </h2>
+            {showLeftMenu ? (
+              <X
+                className="w-5 h-5"
+                style={{ color: 'rgba(251, 237, 224, 0.8)' }}
+              />
+            ) : (
+              <Menu
+                className="w-5 h-5"
+                style={{ color: 'rgba(251, 237, 224, 0.8)' }}
+              />
+            )}
+          </button>
         </div>
 
         {/* Sidebar Content */}
@@ -198,19 +307,21 @@ export default function ChatPage() {
                 }}
                 className="w-full px-3 py-2 rounded-xl flex items-center justify-between transition-all duration-200"
                 style={{
-                  backgroundColor: '#161823',
-                  border: '1px solid #50606C',
-                  color: 'rgba(251, 237, 224, 0.8)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   fontSize: '14px',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(80, 96, 108, 0.2)';
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.style.boxShadow = '0 0 8px rgba(251, 237, 224, 0.12)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#161823';
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}>
                 <span>Select Agent</span>
-                <ChevronDown className="w-4 h-4 opacity-50" />
+                <ChevronDown className="w-4 h-4" style={{ color: 'rgba(251, 237, 224, 0.5)' }} />
               </button>
             </div>
           </div>
@@ -331,6 +442,8 @@ export default function ChatPage() {
           }}
         >
           <div className="flex items-center gap-3">
+            {/* Menu Icon */}
+            
             <div>
               <div
                 style={{
@@ -438,19 +551,19 @@ export default function ChatPage() {
                   >
                     Orchestrate your AI workflows with{' '}
                     <span style={{ 
-                      background: 'linear-gradient(45deg, oklch(97.1% 0.014 343.198), oklch(98.4% 0.019 200.873))',
+                      background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       backgroundClip: 'text'
                     }}>unprecedented</span>{' '}
                     <span style={{ 
-                      background: 'linear-gradient(45deg, oklch(97.1% 0.014 343.198), oklch(98.4% 0.019 200.873))',
+                      background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       backgroundClip: 'text'
                     }}>intelligence</span> and{' '}
                     <span style={{ 
-                      background: 'linear-gradient(45deg, oklch(97.1% 0.014 343.198), oklch(98.4% 0.019 200.873))',
+                      background: 'linear-gradient(45deg, oklch(89.9% 0.061 343.231), oklch(91.7% 0.08 205.041))',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       backgroundClip: 'text'
@@ -519,13 +632,13 @@ export default function ChatPage() {
                   marginBottom: '0',
                 }}
               >
-                <div className="flex flex-col w-full max-w-[90%] md:max-w-[70%]">
+                <div className="flex flex-col max-w-[90%] md:max-w-[70%]" style={{
+                  width: 'fit-content'
+                }}>
                   <div
                     className="px-4 py-3 transition-all duration-200 rounded-2xl"
                     style={{
-                      backgroundColor: msg.isError ? '#dc2626' : (
-                        msg.role === 'user' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)'
-                      ),
+                      backgroundColor: msg.isError ? '#dc2626' : 'rgba(255, 255, 255, 0.1)',
                       border:
                         msg.role === 'assistant' && !msg.isError ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
                       color: msg.isError ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.9)',
