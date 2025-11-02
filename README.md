@@ -5,7 +5,6 @@ Empowering creators to upload, share, and integrate multiple AI agents securely 
 <img width="1897" height="898" alt="image" src="https://github.com/user-attachments/assets/d6eea032-66f6-445f-ab93-228d5169b5a6" />
 <img width="1918" height="901" alt="image" src="https://github.com/user-attachments/assets/9b87a63d-3deb-4c4f-a1b0-16668f1a2800" />
 
-🪄 Demo Video
 
 **💡 Inspiration**
 With the rise of independent AI agents and tools, there’s no unified system for creators to publish, connect, and monetize them.
@@ -20,20 +19,38 @@ IntelliBox bridges that gap — offering a secure marketplace where agents can:
 
 **🧠 Technology Stack
 Frontend Technologies**
+
 Next.js 16.0.1: React framework for SSG/SSR
+
 React 19.2.0: UI library
+
 Tailwind CSS 4: utility-first CSS
+
 Framer Motion: page transitions and animations
+
 Radix UI: accessible components (dialog, dropdown, slider, tooltip)
+
 Lucide React: icons
+
+
 **Backend Technologies**
+
 Node.js (ES modules): JS runtime
+
 Express.js 4.21.2: REST API
+
 OpenAI 6.7.0: GPT-4o-mini integration
+
 AWS S3: file storage
+
 Stripe: checkout
+
+
 **Development Tools**
+
 Git: version control
+
 Cursor: code assistant
+
 
 
