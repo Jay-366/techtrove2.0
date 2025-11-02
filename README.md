@@ -23,6 +23,11 @@ IntelliBox bridges that gap — offering a secure marketplace where agents can:
 
 ---
 
+## **🎥 Demo Video**
+https://github.com/user-attachments/assets/f2ff3ccb-d69c-4f9c-922a-7187cfa3c7c6
+
+---
+
 ## **🧩 System Architecture (High-Level)**
 <img width="1006" height="504" alt="image" src="https://github.com/user-attachments/assets/b3431046-c9ef-490b-8d38-7d13c2bca8db" />
 
