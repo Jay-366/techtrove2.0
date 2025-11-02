@@ -1,12 +1,14 @@
 
-🧠 **IntelliBox — The Intelligent Agent Marketplace**
+# 🧠 **IntelliBox — The Intelligent Agent Marketplace**
+
 Empowering creators to upload, share, and integrate multiple AI agents securely across platforms.
 
 <img width="1897" height="898" alt="image" src="https://github.com/user-attachments/assets/d6eea032-66f6-445f-ab93-228d5169b5a6" />
 <img width="1918" height="901" alt="image" src="https://github.com/user-attachments/assets/9b87a63d-3deb-4c4f-a1b0-16668f1a2800" />
 
+---
 
-**💡 Inspiration**
+## **💡 Inspiration**
 
 With the rise of independent AI agents and tools, there’s no unified system for creators to publish, connect, and monetize them.
 IntelliBox bridges that gap — offering a secure marketplace where agents can:
@@ -19,11 +21,15 @@ IntelliBox bridges that gap — offering a secure marketplace where agents can:
 
 💰 Monetization – Creators earn from token-based pricing.
 
-**🧩 System Architecture (High-Level)**
+---
+
+## **🧩 System Architecture (High-Level)**
 <img width="1006" height="504" alt="image" src="https://github.com/user-attachments/assets/b3431046-c9ef-490b-8d38-7d13c2bca8db" />
 
-**🧠 Technology Stack
-Frontend Technologies**
+---
+
+## **🧠 Technology Stack**
+**Frontend Technologies**
 
 Next.js 16.0.1: React framework for SSG/SSR
 
@@ -51,12 +57,6 @@ AWS S3: file storage
 Stripe: checkout
 
 
-**Development Tools**
-
-Git: version control
-
-Cursor: code assistant
-
 **Important endpoints**
 
 File upload & storage
@@ -74,8 +74,9 @@ Handles /chatRequest
 Orchestration (brain)
 /backend/agentCoordinator.js (coordinator)
 
+---
 
-Peanut Potato Team Members
+## Peanut Potato Team Members
 - Loy Qun Jie 
 - Lee Wai Yee 
 - Lim Fang Yee 
