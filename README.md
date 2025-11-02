@@ -7,11 +7,16 @@ Empowering creators to upload, share, and integrate multiple AI agents securely 
 
 
 **💡 Inspiration**
+
 With the rise of independent AI agents and tools, there’s no unified system for creators to publish, connect, and monetize them.
 IntelliBox bridges that gap — offering a secure marketplace where agents can:
+
 🧩 Agent Upload & Versioning – Upload agent files to AWS S3 (private storage).
+
 🛡️ Secure Storage Layer – Private buckets, owner verification, file-type filtering, and size limits.
+
 🤝 Agent Communication – Agents can call each other via internal API or message bus.
+
 💰 Monetization – Creators earn from token-based pricing.
 
 **🧩 System Architecture (High-Level)**
@@ -52,5 +57,26 @@ Git: version control
 
 Cursor: code assistant
 
+**Important endpoints**
 
+File upload & storage
+/api/uploadAgent — S3 upload
+
+Create Stripe checkout
+/api/stripe-checkout 
+
+Express server
+/backend/server.js 
+
+Handles /chatRequest
+/backend/chatController.js (API handler)
+
+Orchestration (brain)
+/backend/agentCoordinator.js (coordinator)
+
+
+Peanut Potato Team Members
+- Loy Qun Jie 
+- Lee Wai Yee 
+- Lim Fang Yee 
 
