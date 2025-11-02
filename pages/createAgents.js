@@ -709,7 +709,7 @@ export default function CreateAgentPage() {
               <div className="flex items-center justify-center gap-2">
                 <Upload className="w-5 h-5" />
                 <span className="text-lg font-medium">
-                  Upload file to storage only (S3)
+                  Upload
                 </span>
               </div>
             </button>
