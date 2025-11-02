@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bot, Search, Plus, Settings, Info, Calendar, Sparkles, MessageCircle, ChevronDown, Menu, X } from 'lucide-react';
+import { Bot, Search, Plus, Settings, Info, Calendar, Sparkles, MessageCircle, ChevronDown, Menu, X, Clock, Check, AlertCircle } from 'lucide-react';
 import { useAIBoxChat } from '../lib/useAIBoxChat';
 import SplitText from '../components/SplitText';
 import { PromptInputBox } from '../components/ai-prompt-box';
@@ -1026,7 +1026,7 @@ export default function ChatPage() {
                 <div
                   className="px-4 py-3 rounded-2xl flex items-center gap-1"
                   style={{
-                    backgroundColor: '#50606C',
+                    backgroundColor: '#000000',
                     maxWidth: '80px',
                   }}
                 >
@@ -1101,7 +1101,7 @@ export default function ChatPage() {
         <div
           className="px-3 md:px-6"
           style={{
-            backgroundColor: '#161823',
+            backgroundColor: '#000000',
             paddingTop: '12px',
             paddingBottom: '17px',
             marginBottom: '5px',
@@ -1126,7 +1126,7 @@ export default function ChatPage() {
           style={{
             width: '100%',
             maxWidth: '360px',
-            backgroundColor: '#1C1F2B',
+            backgroundColor: '#000000',
             borderLeft: '1px solid #50606C',
             animation: 'slideIn 300ms ease-out',
           }}

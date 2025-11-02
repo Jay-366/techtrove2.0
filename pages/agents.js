@@ -365,9 +365,7 @@ export default function MyAgentsPage() {
                     { value: "price", label: "Price" },
                     { value: "rating", label: "Rating" },
                     { value: "users", label: "Users" },
-                    ...(activeTab === "created"
-                      ? [{ value: "revenue", label: "Revenue" }]
-                      : []),
+                    { value: "revenue", label: "Revenue" },
                   ].map((option) => (
                     <button
                       key={option.value}
